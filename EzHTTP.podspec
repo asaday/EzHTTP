@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "EzHTTP"
-s.version      = "0.0.2"
+s.version      = "0.0.3"
 s.summary      = "Easy HTTP access library"
 
 s.homepage     = "http://nagisaworks.com"

@@ -1,5 +1,5 @@
 
-import UIKit
+import Foundation
 
 public extension NSURLRequest {
 	convenience init(string str: String) {
@@ -33,6 +33,12 @@ public extension NSURLSession {
 	}
 }
 
+extension NSMutableData {
+	func appendString(s: String) {
+		if let d = s.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) { appendData(d) }
+	}
+}
+
 // MARK: - HTTP
 
 public class HTTP: NSObject, NSURLSessionDelegate {
@@ -44,6 +50,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 	public let config = NSURLSessionConfiguration.defaultSessionConfiguration()
 	public var baseURL: NSURL? = nil
+	public var postASJSON = false
 
 	public var errorHandler: ResponseHandler?
 	public var successHandler: ResponseHandler?
@@ -52,6 +59,17 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 	let queue = NSOperationQueue()
 	var session: NSURLSession?
+
+	public class MultipartFile: NSObject {
+		public var mime: String
+		public var filename: String
+		public var data: NSData
+		public init(mime: String, filename: String, data: NSData) {
+			self.mime = mime
+			self.filename = filename
+			self.data = data
+		}
+	}
 
 	override init () {
 		super.init()
@@ -130,6 +148,37 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		return r.joinWithSeparator("&")
 	}
 
+	func hasMultipartFile(params: [String: AnyObject]?) -> Bool {
+		guard let params = params else { return false }
+		for v in params.values {
+			if v is MultipartFile { return true }
+		}
+		return false
+	}
+
+	func encodeMultiPart(params: [String: AnyObject]?, boundary: String) -> NSData {
+		guard let params = params else { return NSData() }
+		let r = NSMutableData()
+
+		for (k, v) in params {
+			if v is MultipartFile { continue }
+			r.appendString("--\(boundary)\r\n")
+			r.appendString("Content-Disposition: form-data; name=\"\(k)\"\r\n\r\n\(v)\r\n")
+		}
+
+		for (k, v) in params {
+			guard let d = v as? MultipartFile else { continue }
+			r.appendString("--\(boundary)\r\n")
+			r.appendString("Content-Disposition: form-data; name=\"\(k)\"; filename=\"\(d.filename )\"\r\n")
+			r.appendString("Content-Type: \(d.mime)\r\n\r\n")
+			r.appendData(d.data)
+			r.appendString("\r\n")
+		}
+
+		r.appendString("--\(boundary)--\r\n")
+		return r
+	}
+
 	public func createRequest(method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> NSMutableURLRequest? {
 		guard let url = NSURL(string: urls, relativeToURL: baseURL) else { return nil }
 
@@ -148,8 +197,23 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 				}
 			}
 		} else {
-			req.HTTPBody = encodeQuery(params).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-			req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+			if postASJSON {
+				if let p = params {
+					req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(p, options: [])
+					req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+				}
+			}
+			else {
+				if hasMultipartFile(params) {
+					let boundary = "Boundary" + NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+					req.HTTPBody = encodeMultiPart(params, boundary: boundary)
+					req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+				} else {
+					req.HTTPBody = encodeQuery(params).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+					req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+				}
+			}
 		}
 
 		// config header is auto marged
