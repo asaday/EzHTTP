@@ -1,0 +1,4 @@
+
+module GCDAsyncSocket {
+    header "../sources/GCDAsyncSocket.h"
+}

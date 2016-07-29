@@ -15,11 +15,13 @@ class ViewController: UIViewController {
 		HTTP.sharedInstance.config.timeoutIntervalForRequest = 15
 		HTTP.sharedInstance.logHandler = HTTP.defaultLogHandler
 
+		HTTP.sharedInstance.escapeATS = true
+
 		let lbl = UILabel(frame: view.bounds)
 		lbl.numberOfLines = 0
 		view.addSubview(lbl)
 
-		HTTP.get("https://httpbin.org/get") {
+		HTTP.get("http://httpbin.org/get") {
 			lbl.text = $0.string
 		}
 

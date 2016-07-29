@@ -1,4 +1,9 @@
 
+//
+//  EzHTTP.swift
+//  EzHTTP
+//
+
 import Foundation
 
 public extension NSURLRequest {
@@ -50,16 +55,28 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 	public let config = NSURLSessionConfiguration.defaultSessionConfiguration()
 	public var baseURL: NSURL? = nil
-	public var postASJSON = false
+	public var postASJSON: Bool = false
 
 	public var errorHandler: ResponseHandler?
 	public var successHandler: ResponseHandler?
 	public var logHandler: ResponseHandler?
 	public var stubHandler: ((request: NSURLRequest) -> Response?)?
 
-	let queue = NSOperationQueue()
-	var session: NSURLSession?
+	public var useIndicator: Bool = true
+	public var escapeATS: Bool = false
 
+	var session: NSURLSession?
+	var squeue: NSOperationQueue?
+	var hqueue: NSOperationQueue?
+
+	public class Task {
+		public var sessionTask: NSURLSessionTask?
+		public var httpOperation: NSOperation?
+		public func cancel() {
+			sessionTask?.cancel()
+			httpOperation?.cancel()
+		}
+	}
 	public class MultipartFile: NSObject {
 		public var mime: String
 		public var filename: String
@@ -73,17 +90,17 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 	override init () {
 		super.init()
-		NetworkIndicator.addOberveQueue(queue)
 		// config.HTTPMaximumConnectionsPerHost = 6
 		// config.timeoutIntervalForRequest = 15
 		// logHandler = HTTP.defaultLogHandler
 	}
 
 	deinit {
-		NetworkIndicator.removeOberveQueue(queue)
+		NetworkIndicator.removeOberveQueue(squeue)
+		NetworkIndicator.removeOberveQueue(hqueue)
 	}
 
-	public func request(request: NSURLRequest, handler: ResponseHandler) -> NSURLSessionDataTask? {
+	public func request(request: NSURLRequest, handler: ResponseHandler) -> Task? {
 
 		let handlecall: ((res: Response) -> Void) = { res in
 			if res.data == nil { self.errorHandler?(res: res) }
@@ -100,11 +117,18 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 			}
 		}
 
-		if session == nil { session = NSURLSession(configuration: config, delegate: self, delegateQueue: queue) }
+		if session == nil {
+			let q = NSOperationQueue()
+			if useIndicator { NetworkIndicator.addOberveQueue(q) }
+			session = NSURLSession(configuration: config, delegate: self, delegateQueue: q)
+			squeue = q
+		}
+
 		let isMain = NSThread.isMainThread()
 		let startTime = NSDate()
+		let task = Task()
 
-		return session?.requestData(request) { data, response, error in
+		let comp: ((NSData?, NSURLResponse?, NSError?) -> Void) = { data, response, error in
 			let hresponse = response as? NSHTTPURLResponse
 			let duration = NSDate().timeIntervalSinceDate(startTime)
 			let res = Response(data: data, error: error, response: hresponse, request: request, duration: duration)
@@ -114,6 +138,23 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 				dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { handlecall(res: res) }
 			}
 		}
+
+		if escapeATS && HTTPOperation.isATSBlocked(request.URL) { // HTTP
+			if hqueue == nil {
+				let q = NSOperationQueue ()
+				q.maxConcurrentOperationCount = 6
+				if useIndicator { NetworkIndicator.addOberveQueue(q) }
+				hqueue = q
+			}
+
+			let op = HTTPOperation(request: request, completion: comp)
+			hqueue?.addOperation(op)
+			task.httpOperation = op
+
+		} else { // normal
+			task .sessionTask = session?.requestData(request, comp)
+		}
+		return task
 	}
 
 	func encodeQuery(params: [String: AnyObject]?) -> String {
@@ -183,8 +224,8 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		guard let url = NSURL(string: urls, relativeToURL: baseURL) else { return nil }
 
 		let req = NSMutableURLRequest(URL: url)
-
 		req.HTTPMethod = method.rawValue
+		req.timeoutInterval = config.timeoutIntervalForRequest
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
 
 		if method == .GET || method == .DELETE || method == .HEAD {
@@ -221,7 +262,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		return req
 	}
 
-	public func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: ResponseHandler) -> NSURLSessionDataTask? {
+	public func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: ResponseHandler) -> Task? {
 
 		guard let req = createRequest(method, urls, params: params, headers: headers) else {
 			handler(res: Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
@@ -246,15 +287,15 @@ public extension HTTP {
 		return sharedInstance.createRequest(method, urls, params: params, headers: headers)
 	}
 
-	static func request(request: NSURLRequest, _ handler: ResponseHandler) -> NSURLSessionDataTask? {
+	static func request(request: NSURLRequest, _ handler: ResponseHandler) -> Task? {
 		return sharedInstance.request(request, handler: handler)
 	}
 
-	static func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> NSURLSessionDataTask? {
+	static func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
 		return sharedInstance.request(method, urls, params: params, headers: headers, handler: handler)
 	}
 
-	static func get(urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> NSURLSessionDataTask? {
+	static func get(urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
 		return sharedInstance.request(.GET, urls, params: params, headers: headers, handler: handler)
 	}
 
@@ -343,79 +384,5 @@ public extension HTTP {
 		}
 	}
 
-}
-
-// MARK: - NetworkIndicator
-
-public class NetworkIndicator: NSObject {
-	static let sharedManager = NetworkIndicator()
-	var states: [String: Bool] = [:]
-	var queues: [NSOperationQueue] = []
-	var indicatorTimer: NSTimer? = nil
-	var visible: Bool = false
-
-	public static func setState(key: String, _ state: Bool) { sharedManager.setState(key, state: state) }
-	public static func start(key: String) { sharedManager.setState(key, state: true) }
-	public static func stop(key: String) { sharedManager.setState(key, state: false) }
-
-	public static func addOberveQueue(queue: NSOperationQueue) {
-		queue.addObserver(sharedManager, forKeyPath: "operationCount", options: .New, context: nil)
-		sharedManager.queues.append(queue)
-	}
-	public static func removeOberveQueue(queue: NSOperationQueue) {
-		queue.removeObserver(sharedManager, forKeyPath: "operationCount")
-		if let idx = sharedManager.queues.indexOf(queue) { sharedManager.queues.removeAtIndex(idx) }
-	}
-
-	override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String: AnyObject]?, context: UnsafeMutablePointer<Void>) {
-		if keyPath != "operationCount" { return }
-		startIndicator()
-	}
-
-	var total: Int {
-		var total: Int = 0
-		for (_, v) in states { total += v ? 1 : 0 }
-		for q in queues { total += q.operationCount }
-		return total
-	}
-
-	deinit {
-		for q in queues { q.removeObserver(self, forKeyPath: "operationCount") }
-		indicatorTimer?.invalidate()
-		indicatorTimer = nil
-	}
-
-	func setState(key: String, state: Bool) {
-		states[key] = state
-		startIndicator()
-	}
-
-	func startIndicator() {
-		#if os(iOS)
-			if total <= 0 || visible { return }
-
-			dispatch_async(dispatch_get_main_queue()) {
-				if self.total <= 0 { return }
-
-				UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-				self.visible = true
-
-				self.indicatorTimer?.invalidate()
-				self.indicatorTimer = NSTimer.scheduledTimerWithTimeInterval(0.3, target: self, selector: #selector(self.stopIndicator), userInfo: nil, repeats: true)
-			}
-		#endif
-	}
-
-	func stopIndicator() {
-		#if os(iOS)
-			if total > 0 { return }
-			dispatch_async(dispatch_get_main_queue()) {
-				UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-				self.visible = false
-				self.indicatorTimer?.invalidate()
-				self.indicatorTimer = nil
-			}
-		#endif
-	}
 }
 

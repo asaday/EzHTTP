@@ -7,15 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C36B4E181D45203700FC8D0B /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */; };
+		C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */; };
+		C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1A1D45204700FC8D0B /* Indicator.swift */; };
+		C36B4E1D1D45205E00FC8D0B /* HTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */; };
 		C3D225C91D28AA5200A0F339 /* EzHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = C3D225C51D28AA5200A0F339 /* EzHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3D225CB1D28AA5200A0F339 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* Network.swift */; };
+		C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* EzHTTP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		C36B4E1A1D45204700FC8D0B /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
+		C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPOperation.swift; sourceTree = "<group>"; };
+		C36B4E291D45318F00FC8D0B /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D225C51D28AA5200A0F339 /* EzHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EzHTTP.h; sourceTree = "<group>"; };
 		C3D225C61D28AA5200A0F339 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C3D225C81D28AA5200A0F339 /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		C3D225C81D28AA5200A0F339 /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,9 +38,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C36B4E281D45318F00FC8D0B /* modules */ = {
+			isa = PBXGroup;
+			children = (
+				C36B4E291D45318F00FC8D0B /* module.modulemap */,
+			);
+			path = modules;
+			sourceTree = "<group>";
+		};
 		C3D225AF1D28AA0900A0F339 = {
 			isa = PBXGroup;
 			children = (
+				C36B4E281D45318F00FC8D0B /* modules */,
 				C3D225C41D28AA5200A0F339 /* resources */,
 				C3D225C71D28AA5200A0F339 /* sources */,
 				C3D225BA1D28AA0900A0F339 /* Products */,
@@ -58,7 +76,11 @@
 		C3D225C71D28AA5200A0F339 /* sources */ = {
 			isa = PBXGroup;
 			children = (
-				C3D225C81D28AA5200A0F339 /* Network.swift */,
+				C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */,
+				C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */,
+				C3D225C81D28AA5200A0F339 /* EzHTTP.swift */,
+				C36B4E1A1D45204700FC8D0B /* Indicator.swift */,
+				C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -71,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3D225C91D28AA5200A0F339 /* EzHTTP.h in Headers */,
+				C36B4E181D45203700FC8D0B /* GCDAsyncSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +164,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3D225CB1D28AA5200A0F339 /* Network.swift in Sources */,
+				C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */,
+				C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */,
+				C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */,
+				C36B4E1D1D45205E00FC8D0B /* HTTPOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +216,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -232,6 +259,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -242,6 +270,7 @@
 		C3D225C21D28AA0900A0F339 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -253,12 +282,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = modules;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		C3D225C31D28AA0900A0F339 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -270,6 +302,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = modules;
 			};
 			name = Release;
 		};
