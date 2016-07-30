@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C36B4E321D4531E300FC8D0B /* EzHTTPSampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E311D4531E300FC8D0B /* EzHTTPSampleTests.swift */; };
+		C3792E901D4CD3D900B08DEA /* EzHTTPSampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */; };
 		C3D225D91D28AAAC00A0F339 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225D81D28AAAC00A0F339 /* AppDelegate.swift */; };
 		C3D225DB1D28AAAC00A0F339 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225DA1D28AAAC00A0F339 /* ViewController.swift */; };
 		C3D225DE1D28AAAC00A0F339 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3D225DC1D28AAAC00A0F339 /* Main.storyboard */; };
@@ -18,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C36B4E341D4531E300FC8D0B /* PBXContainerItemProxy */ = {
+		C3792E921D4CD3D900B08DEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C3D225CD1D28AAAC00A0F339 /* Project object */;
 			proxyType = 1;
@@ -56,9 +56,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C36B4E2F1D4531E300FC8D0B /* EzHTTPSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EzHTTPSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C36B4E311D4531E300FC8D0B /* EzHTTPSampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPSampleTests.swift; sourceTree = "<group>"; };
-		C36B4E331D4531E300FC8D0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3792E8D1D4CD3D900B08DEA /* EzHTTPSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EzHTTPSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPSampleTests.swift; sourceTree = "<group>"; };
+		C3792E911D4CD3D900B08DEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3D225D51D28AAAC00A0F339 /* EzHTTPSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EzHTTPSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D225D81D28AAAC00A0F339 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3D225DA1D28AAAC00A0F339 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -70,7 +70,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C36B4E2C1D4531E300FC8D0B /* Frameworks */ = {
+		C3792E8A1D4CD3D900B08DEA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -88,11 +88,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C36B4E301D4531E300FC8D0B /* EzHTTPSampleTests */ = {
+		C3792E8E1D4CD3D900B08DEA /* EzHTTPSampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				C36B4E311D4531E300FC8D0B /* EzHTTPSampleTests.swift */,
-				C36B4E331D4531E300FC8D0B /* Info.plist */,
+				C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */,
+				C3792E911D4CD3D900B08DEA /* Info.plist */,
 			);
 			path = EzHTTPSampleTests;
 			sourceTree = "<group>";
@@ -102,7 +102,7 @@
 			children = (
 				C3D225EA1D28AAC000A0F339 /* EzHTTP.xcodeproj */,
 				C3D225D71D28AAAC00A0F339 /* EzHTTPSample */,
-				C36B4E301D4531E300FC8D0B /* EzHTTPSampleTests */,
+				C3792E8E1D4CD3D900B08DEA /* EzHTTPSampleTests */,
 				C3D225D61D28AAAC00A0F339 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -111,7 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				C3D225D51D28AAAC00A0F339 /* EzHTTPSample.app */,
-				C36B4E2F1D4531E300FC8D0B /* EzHTTPSampleTests.xctest */,
+				C3792E8D1D4CD3D900B08DEA /* EzHTTPSampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,22 +140,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C36B4E2E1D4531E300FC8D0B /* EzHTTPSampleTests */ = {
+		C3792E8C1D4CD3D900B08DEA /* EzHTTPSampleTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C36B4E381D4531E300FC8D0B /* Build configuration list for PBXNativeTarget "EzHTTPSampleTests" */;
+			buildConfigurationList = C3792E941D4CD3D900B08DEA /* Build configuration list for PBXNativeTarget "EzHTTPSampleTests" */;
 			buildPhases = (
-				C36B4E2B1D4531E300FC8D0B /* Sources */,
-				C36B4E2C1D4531E300FC8D0B /* Frameworks */,
-				C36B4E2D1D4531E300FC8D0B /* Resources */,
+				C3792E891D4CD3D900B08DEA /* Sources */,
+				C3792E8A1D4CD3D900B08DEA /* Frameworks */,
+				C3792E8B1D4CD3D900B08DEA /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C36B4E351D4531E300FC8D0B /* PBXTargetDependency */,
+				C3792E931D4CD3D900B08DEA /* PBXTargetDependency */,
 			);
 			name = EzHTTPSampleTests;
 			productName = EzHTTPSampleTests;
-			productReference = C36B4E2F1D4531E300FC8D0B /* EzHTTPSampleTests.xctest */;
+			productReference = C3792E8D1D4CD3D900B08DEA /* EzHTTPSampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		C3D225D41D28AAAC00A0F339 /* EzHTTPSample */ = {
@@ -187,7 +187,7 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = asada;
 				TargetAttributes = {
-					C36B4E2E1D4531E300FC8D0B = {
+					C3792E8C1D4CD3D900B08DEA = {
 						CreatedOnToolsVersion = 7.3.1;
 						TestTargetID = C3D225D41D28AAAC00A0F339;
 					};
@@ -216,7 +216,7 @@
 			projectRoot = "";
 			targets = (
 				C3D225D41D28AAAC00A0F339 /* EzHTTPSample */,
-				C36B4E2E1D4531E300FC8D0B /* EzHTTPSampleTests */,
+				C3792E8C1D4CD3D900B08DEA /* EzHTTPSampleTests */,
 			);
 		};
 /* End PBXProject section */
@@ -232,7 +232,7 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		C36B4E2D1D4531E300FC8D0B /* Resources */ = {
+		C3792E8B1D4CD3D900B08DEA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -252,11 +252,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C36B4E2B1D4531E300FC8D0B /* Sources */ = {
+		C3792E891D4CD3D900B08DEA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C36B4E321D4531E300FC8D0B /* EzHTTPSampleTests.swift in Sources */,
+				C3792E901D4CD3D900B08DEA /* EzHTTPSampleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,10 +272,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C36B4E351D4531E300FC8D0B /* PBXTargetDependency */ = {
+		C3792E931D4CD3D900B08DEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C3D225D41D28AAAC00A0F339 /* EzHTTPSample */;
-			targetProxy = C36B4E341D4531E300FC8D0B /* PBXContainerItemProxy */;
+			targetProxy = C3792E921D4CD3D900B08DEA /* PBXContainerItemProxy */;
 		};
 		C3D225F31D28AAE800A0F339 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -304,7 +304,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		C36B4E361D4531E300FC8D0B /* Debug */ = {
+		C3792E951D4CD3D900B08DEA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -316,7 +316,7 @@
 			};
 			name = Debug;
 		};
-		C36B4E371D4531E300FC8D0B /* Release */ = {
+		C3792E961D4CD3D900B08DEA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -440,11 +440,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C36B4E381D4531E300FC8D0B /* Build configuration list for PBXNativeTarget "EzHTTPSampleTests" */ = {
+		C3792E941D4CD3D900B08DEA /* Build configuration list for PBXNativeTarget "EzHTTPSampleTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C36B4E361D4531E300FC8D0B /* Debug */,
-				C36B4E371D4531E300FC8D0B /* Release */,
+				C3792E951D4CD3D900B08DEA /* Debug */,
+				C3792E961D4CD3D900B08DEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

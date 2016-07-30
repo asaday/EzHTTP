@@ -21,6 +21,8 @@
 		C36B4E1A1D45204700FC8D0B /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
 		C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPOperation.swift; sourceTree = "<group>"; };
 		C36B4E291D45318F00FC8D0B /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		C3792E801D4CD1E400B08DEA /* EzHTTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPTests.swift; sourceTree = "<group>"; };
+		C3792E821D4CD1E400B08DEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D225C51D28AA5200A0F339 /* EzHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EzHTTP.h; sourceTree = "<group>"; };
 		C3D225C61D28AA5200A0F339 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -46,12 +48,22 @@
 			path = modules;
 			sourceTree = "<group>";
 		};
+		C3792E7F1D4CD1E400B08DEA /* EzHTTPTests */ = {
+			isa = PBXGroup;
+			children = (
+				C3792E801D4CD1E400B08DEA /* EzHTTPTests.swift */,
+				C3792E821D4CD1E400B08DEA /* Info.plist */,
+			);
+			path = EzHTTPTests;
+			sourceTree = "<group>";
+		};
 		C3D225AF1D28AA0900A0F339 = {
 			isa = PBXGroup;
 			children = (
 				C36B4E281D45318F00FC8D0B /* modules */,
 				C3D225C41D28AA5200A0F339 /* resources */,
 				C3D225C71D28AA5200A0F339 /* sources */,
+				C3792E7F1D4CD1E400B08DEA /* EzHTTPTests */,
 				C3D225BA1D28AA0900A0F339 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -124,6 +136,7 @@
 		C3D225B01D28AA0900A0F339 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = asada;
 				TargetAttributes = {

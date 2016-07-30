@@ -119,11 +119,16 @@ class HTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 			for (k, v) in cheaders { headers[k] = v }
 		}
 
+		if let d = request.HTTPBody { headers["Content-Length"] = "\(d.length)" }
+
 		headlines.appendContentsOf(headers.map { "\($0): \($1)" })
 		headlines.append("")
 		headlines.append("")
 
-		let dat = headlines.joinWithSeparator("\r\n").dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!
+		let dat: NSMutableData = headlines.joinWithSeparator("\r\n").dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) as! NSMutableData
+
+		if let d = request.HTTPBody { dat.appendData(d) }
+
 		socket.writeData(dat, withTimeout: request.timeoutInterval, tag: 0)
 		socket.readDataToData("\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!, withTimeout: request.timeoutInterval, tag: 0)
 	}
