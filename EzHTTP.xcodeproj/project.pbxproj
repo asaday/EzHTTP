@@ -10,7 +10,7 @@
 		C36B4E181D45203700FC8D0B /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */; };
 		C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */; };
 		C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1A1D45204700FC8D0B /* Indicator.swift */; };
-		C36B4E1D1D45205E00FC8D0B /* HTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */; };
+		C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */; };
 		C3D225C91D28AA5200A0F339 /* EzHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = C3D225C51D28AA5200A0F339 /* EzHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* EzHTTP.swift */; };
 /* End PBXBuildFile section */
@@ -19,7 +19,7 @@
 		C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
 		C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		C36B4E1A1D45204700FC8D0B /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
-		C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPOperation.swift; sourceTree = "<group>"; };
+		C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SockHTTPOperation.swift; sourceTree = "<group>"; };
 		C36B4E291D45318F00FC8D0B /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		C3792E801D4CD1E400B08DEA /* EzHTTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPTests.swift; sourceTree = "<group>"; };
 		C3792E821D4CD1E400B08DEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 				C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */,
 				C3D225C81D28AA5200A0F339 /* EzHTTP.swift */,
 				C36B4E1A1D45204700FC8D0B /* Indicator.swift */,
-				C36B4E1C1D45205E00FC8D0B /* HTTPOperation.swift */,
+				C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */,
 			);
 			path = sources;
 			sourceTree = "<group>";
@@ -180,7 +180,7 @@
 				C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */,
 				C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */,
 				C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */,
-				C36B4E1D1D45205E00FC8D0B /* HTTPOperation.swift in Sources */,
+				C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

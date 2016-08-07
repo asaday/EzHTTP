@@ -139,7 +139,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 			}
 		}
 
-		if escapeATS && HTTPOperation.isATSBlocked(request.URL) { // HTTP
+		if escapeATS && SockHTTPOperation.isATSBlocked(request.URL) { // HTTP
 			if hqueue == nil {
 				let q = NSOperationQueue ()
 				q.maxConcurrentOperationCount = 6
@@ -147,12 +147,13 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 				hqueue = q
 			}
 
-			let op = HTTPOperation(request: request, completion: comp)
+			let op = SockHTTPOperation(request: request, completion: comp)
+			op.rehttpsSession = session
 			hqueue?.addOperation(op)
 			task.httpOperation = op
 
 		} else { // normal
-			task .sessionTask = session?.requestData(request, comp)
+			task.sessionTask = session?.requestData(request, comp)
 		}
 		return task
 	}

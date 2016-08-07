@@ -135,4 +135,17 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectationsWithTimeout(5, handler: nil)
 	}
 
+	func testGetRedirectHTTPS() {
+		let expectation = expectationWithDescription("")
+
+		// first call is HTTP,and eveolute to HTTPS by server redirect
+		HTTP.get(host + "/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fget%3Fa=b") { (res) in
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
+			expectation.fulfill()
+		}
+		waitForExpectationsWithTimeout(5, handler: nil)
+
+	}
+
 }
