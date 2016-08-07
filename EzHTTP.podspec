@@ -10,7 +10,7 @@ s.license     = { :type => "MIT" }
 s.author       = { "asaday" => "" }
 
 s.platform     = :ios, "8.0"
-s.source       = { :path=> "https://github.com/asaday/EzHTTP.git", :tag => s.version }
+s.source       = { :git=> "https://github.com/asaday/EzHTTP.git", :tag => s.version }
 s.source_files  = "sources/**/*.{swift,h,m}"
 s.requires_arc = true
 
