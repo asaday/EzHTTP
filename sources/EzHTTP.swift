@@ -1,8 +1,6 @@
 
-//
-//  EzHTTP.swift
-//  EzHTTP
-//
+// Copyright (c) NagisaWorks asaday
+// The MIT License (MIT)
 
 import Foundation
 
@@ -74,7 +72,9 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		public var httpOperation: NSOperation?
 		public func cancel() {
 			sessionTask?.cancel()
+			sessionTask = nil
 			httpOperation?.cancel()
+			httpOperation = nil
 		}
 	}
 	public class MultipartFile: NSObject {
@@ -258,7 +258,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 			}
 		}
 
-		// config header is auto marged
+		// config header is auto merged
 
 		return req
 	}

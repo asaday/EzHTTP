@@ -1,7 +1,7 @@
-//
-//  Indicator.swift
-//  EzHTTP
-//
+
+// Copyright (c) NagisaWorks asaday
+// The MIT License (MIT)
+
 
 import Foundation
 

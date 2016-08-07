@@ -1,7 +1,7 @@
-//
-//  EzHTTPSampleTests.swift
-//  EzHTTPSampleTests
-//
+
+// Copyright (c) NagisaWorks asaday
+// The MIT License (MIT)
+
 
 import XCTest
 import EzHTTP
