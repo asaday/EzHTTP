@@ -45,7 +45,7 @@ extension NSMutableData {
 // MARK: - HTTP
 
 public class HTTP: NSObject, NSURLSessionDelegate {
-	public static let sharedInstance: HTTP = HTTP()
+	public static let shared: HTTP = HTTP()
 
 	public enum Method: String {
 		case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT
@@ -142,7 +142,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		if escapeATS && SockHTTPOperation.isATSBlocked(request.URL) { // HTTP
 			if hqueue == nil {
 				let q = NSOperationQueue ()
-				q.maxConcurrentOperationCount = 6
+				q.maxConcurrentOperationCount = 12
 				if useIndicator { NetworkIndicator.addOberveQueue(q) }
 				hqueue = q
 			}
@@ -285,19 +285,19 @@ extension HTTP {
 
 public extension HTTP {
 	static func createRequest(method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> NSMutableURLRequest? {
-		return sharedInstance.createRequest(method, urls, params: params, headers: headers)
+		return shared.createRequest(method, urls, params: params, headers: headers)
 	}
 
 	static func request(request: NSURLRequest, _ handler: ResponseHandler) -> Task? {
-		return sharedInstance.request(request, handler: handler)
+		return shared.request(request, handler: handler)
 	}
 
 	static func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
-		return sharedInstance.request(method, urls, params: params, headers: headers, handler: handler)
+		return shared.request(method, urls, params: params, headers: headers, handler: handler)
 	}
 
 	static func get(urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
-		return sharedInstance.request(.GET, urls, params: params, headers: headers, handler: handler)
+		return shared.request(.GET, urls, params: params, headers: headers, handler: handler)
 	}
 
 	// async

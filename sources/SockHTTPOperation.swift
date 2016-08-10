@@ -118,7 +118,24 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 	}
 
 	func socketDidDisconnect(sock: GCDAsyncSocket, withError err: NSError?) {
-		if let e = err { compError(e) }
+		if !executing { return }
+
+		if let e = err {
+			compError(e)
+			return
+		}
+
+		done()
+	}
+
+	func socket(sock: GCDAsyncSocket, shouldTimeoutReadWithTag tag: Int, elapsed: NSTimeInterval, bytesDone length: UInt) -> NSTimeInterval {
+		compError(8, msg: "timeout r")
+		return -1
+	}
+
+	func socket(sock: GCDAsyncSocket, shouldTimeoutWriteWithTag tag: Int, elapsed: NSTimeInterval, bytesDone length: UInt) -> NSTimeInterval {
+		compError(8, msg: "timeout w")
+		return -1
 	}
 
 	func socket(sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
@@ -129,8 +146,10 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		headlines.append("\(request.HTTPMethod!) \(path) HTTP/1.1")
 		headlines.append("Host: \(url.host ?? "")")
 
-		let agent = (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") as? String ?? "") + "/" +
-			(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as? String ?? "") + " EzHTTP/1"
+		var agent = "" // "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_0 like Mac OS X) AppleWebKit/601.0.0 (KHTML, like Gecko) Version/10.0 Mobile/13F69 Safari/601.0 "
+		agent += (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") as? String ?? "") + "/" + (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as? String ?? "") + " "
+		agent += "CFNetwork/758.99.99 Darwin/15.6.99 "
+		agent += "EzHTTP/1"
 
 		var headers: [String: String] = ["Accept": "*/*", "User-Agent": agent]
 		if let reqheaders = request.allHTTPHeaderFields {
@@ -223,6 +242,8 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 			}
 			if hexValue == 0 {
 				completion(chunkData, response, nil)
+				done()
+				return
 			}
 			socket?.readDataToLength(UInt(hexValue), withTimeout: request.timeoutInterval, tag: 0)
 			sequence = .ChunkedBody
