@@ -2,7 +2,6 @@
 // Copyright (c) NagisaWorks asaday
 // The MIT License (MIT)
 
-
 import XCTest
 import EzHTTP
 
@@ -24,6 +23,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	override func setUp() {
 		super.setUp()
+		HTTP.sharedInstance.escapeATS = true
 	}
 
 	override func tearDown() {
@@ -145,6 +145,18 @@ class EzHTTPSampleTests: XCTestCase {
 			expectation.fulfill()
 		}
 		waitForExpectationsWithTimeout(5, handler: nil)
+
+	}
+
+	func testChunk() {
+		let expectation = expectationWithDescription("")
+
+		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { (res) in
+			// HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
+			XCTAssertNil(res.error)
+			expectation.fulfill()
+		}
+		waitForExpectationsWithTimeout(15, handler: nil)
 
 	}
 

@@ -22,6 +22,7 @@ class ViewController: UIViewController {
 
 		HTTP.get("http://httpbin.org/get") {
 			lbl.text = $0.string
+			print($0.headers)
 		}
 	}
 }

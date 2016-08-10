@@ -364,6 +364,8 @@ public extension HTTP {
 		public var stringValue: String { return string ?? "" }
 		public var jsonObjectValue: NSObject { return jsonObject ?? NSObject() }
 
+		public var headers: [String: String] { return response?.allHeaderFields as? [String: String] ?? [:] }
+
 		public var description: String {
 			var result = "[Res] "
 			result += request?.URL?.absoluteString ?? "unknownURL"

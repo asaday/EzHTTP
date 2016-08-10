@@ -17,6 +17,12 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 	var rehttpsSession: NSURLSession?
 	var rehttpsTask: NSURLSessionDataTask?
 
+	enum Sequence: Int { case Header, Body, ChunkedLength, ChunkedBody, ChunkBodyTail }
+	var sequence: Sequence = .Header
+	var chunkData: NSMutableData?
+	let CRLFData = NSData(bytes: [UInt8]([0x0d, 0x0a]), length: 2)
+	let CRLFCRLFData = NSData(bytes: [UInt8]([0x0d, 0x0a, 0x0d, 0x0a]), length: 4)
+
 	class func isATSBlocked(url: NSURL?) -> Bool {
 		guard let url = url else { return false }
 		if url.scheme != "http" { return false }
@@ -146,7 +152,7 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		if let d = request.HTTPBody { dat.appendData(d) }
 
 		socket?.writeData(dat, withTimeout: request.timeoutInterval, tag: 0)
-		socket?.readDataToData("\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!, withTimeout: request.timeoutInterval, tag: 0)
+		socket?.readDataToData(CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
 	}
 
 	func socket(sock: GCDAsyncSocket, didReadData data: NSData, withTag tag: Int) {
@@ -155,15 +161,16 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 			return
 		}
 
-		if response == nil {
+		switch sequence {
+		case .Header:
 			guard let r = makeResponse(data) else {
-				compError(3, msg: "")
+				compError(3, msg: "http make response error")
 				return
 			}
 
 			if r.statusCode >= 301 && r.statusCode <= 308 {
 				if redirectCount > 10 {
-					compError(3, msg: "")
+					compError(3, msg: "http redirect over")
 					return
 				}
 
@@ -187,15 +194,47 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 			}
 
 			response = r
+
+			if (response.allHeaderFields["Transfer-Encoding"] as? String) == "chunked" {
+				socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+				chunkData = NSMutableData()
+				sequence = .ChunkedLength
+				return
+			}
+
 			guard let lenstr = response.allHeaderFields["Content-Length"] as? String, len = UInt(lenstr) else {
-				compError(4, msg: "")
+				compError(4, msg: "http no-length")
 				return
 			}
 
 			socket?.readDataToLength(len, withTimeout: request.timeoutInterval, tag: 0)
-		} else {
+			sequence = .Body
+
+		case .Body:
 			completion(data, response, nil)
 			done()
+
+		case .ChunkedLength:
+			let scanner = NSScanner(string: String(data: data, encoding: NSUTF8StringEncoding) ?? "")
+			var hexValue: UInt32 = 0
+			if scanner.scanHexInt(&hexValue) == false {
+				compError(5, msg: "http illegal chunk len")
+				return
+			}
+			if hexValue == 0 {
+				completion(chunkData, response, nil)
+			}
+			socket?.readDataToLength(UInt(hexValue), withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .ChunkedBody
+
+		case .ChunkedBody:
+			chunkData?.appendData(data)
+			socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .ChunkBodyTail
+
+		case .ChunkBodyTail:
+			socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .ChunkedLength
 		}
 	}
 
