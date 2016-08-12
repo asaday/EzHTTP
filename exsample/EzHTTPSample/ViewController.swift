@@ -10,11 +10,11 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		HTTP.sharedInstance.config.HTTPMaximumConnectionsPerHost = 6
-		HTTP.sharedInstance.config.timeoutIntervalForRequest = 15
-		HTTP.sharedInstance.logHandler = HTTP.defaultLogHandler
+		HTTP.shared.config.HTTPMaximumConnectionsPerHost = 6
+		HTTP.shared.config.timeoutIntervalForRequest = 15
+		HTTP.shared.logHandler = HTTP.defaultLogHandler
 
-		HTTP.sharedInstance.escapeATS = true
+		HTTP.shared.escapeATS = true
 
 		let lbl = UILabel(frame: view.bounds)
 		lbl.numberOfLines = 0

@@ -1,0 +1,12 @@
+
+platform :ios, '8.0'
+use_frameworks!
+
+target 'EzHTTPSample' do
+	pod 'EzHTTP' ,:path => '../'
+end
+
+target 'EzHTTPSampleTests' do
+	pod 'EzHTTP' ,:path => '../'
+end
+

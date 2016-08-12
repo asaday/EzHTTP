@@ -23,7 +23,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	override func setUp() {
 		super.setUp()
-		HTTP.sharedInstance.escapeATS = true
+		HTTP.shared.escapeATS = true
 	}
 
 	override func tearDown() {
