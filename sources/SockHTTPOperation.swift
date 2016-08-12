@@ -72,8 +72,7 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 	}
 
 	override func cancel() {
-		socket?.disconnect()
-		socket = nil
+		closeSocket()
 		rehttpsTask?.cancel()
 		super.cancel()
 	}
@@ -194,8 +193,7 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 				}
 
 				if let location = r.allHeaderFields["Location"] as? String {
-					socket?.disconnect()
-					socket = nil
+					closeSocket()
 					url = NSURL(string: location, relativeToURL: url) ?? url
 					if url.scheme == "https" {
 						if let nreq = request.mutableCopy() as? NSMutableURLRequest {
@@ -287,9 +285,13 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		return NSHTTPURLResponse(URL: url, statusCode: status, HTTPVersion: st[0], headerFields: headers)
 	}
 
-	func done() {
+	func closeSocket() {
+		socket?.delegate = nil
 		socket?.disconnect()
 		socket = nil
+	}
+
+	func done() {
 		executing = false
 		finished = true
 	}
