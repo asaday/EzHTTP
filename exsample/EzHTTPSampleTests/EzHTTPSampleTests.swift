@@ -120,6 +120,18 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectationsWithTimeout(5, handler: nil)
 	}
 
+	func testPostMQ() {
+		let expectation = expectationWithDescription("")
+		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in
+			print(res.stringValue)
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/q"), "p")
+			expectation.fulfill()
+		}
+		waitForExpectationsWithTimeout(5, handler: nil)
+	}
+
 	func testPostFile() {
 		let expectation = expectationWithDescription("")
 

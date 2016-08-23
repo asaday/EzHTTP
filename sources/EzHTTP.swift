@@ -47,9 +47,7 @@ extension NSMutableData {
 public class HTTP: NSObject, NSURLSessionDelegate {
 	public static let shared: HTTP = HTTP()
 
-	public enum Method: String {
-		case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT
-	}
+	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
 	public let config = NSURLSessionConfiguration.defaultSessionConfiguration()
 	public var baseURL: NSURL? = nil
@@ -88,6 +86,8 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		}
 	}
 
+	enum ParamMode: String { case Query = "?query", Form = "?form", Json = "?json" }
+
 	override init () {
 		super.init()
 		// config.HTTPMaximumConnectionsPerHost = 6
@@ -102,11 +102,11 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 	public func request(request: NSURLRequest, handler: ResponseHandler) -> Task? {
 
-		let handlecall: ((res: Response) -> Void) = { res in
-			if res.data == nil { self.errorHandler?(res: res) }
-			else { self.successHandler?(res: res) }
-			self.logHandler?(res: res)
-			handler(res: res)
+		let handlecall: ((res: Response) -> Void) = { result in
+			if result.data == nil { self.errorHandler?(result: result) }
+			else { self.successHandler?(result: result) }
+			self.logHandler?(result: result)
+			handler(result: result)
 		}
 
 		if let stub = stubHandler {
@@ -135,7 +135,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 			if isMain {
 				dispatch_async(dispatch_get_main_queue()) { handlecall(res: res) }
 			} else {
-				dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { handlecall(res: res) }
+				dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) { handlecall(res: res) }
 			}
 		}
 
@@ -228,37 +228,47 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		req.HTTPMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
+		// config header is auto merged
 
-		if method == .GET || method == .DELETE || method == .HEAD {
-			if let uc = NSURLComponents(URL: url, resolvingAgainstBaseURL: false) {
-				var q = encodeQuery(params)
-				if let oq = uc.percentEncodedQuery { q = oq + "&" }
-				if !q.isEmpty {
-					uc.percentEncodedQuery = q
-					if let uu = uc.URL { req.URL = uu }
-				}
+		let postmode = (method == .POST || method == .PUT || method == .PATCH)
+
+		var queryParams = params?[ParamMode.Query.rawValue] as? [String: AnyObject]
+		if !postmode && queryParams == nil { queryParams = params }
+
+		if let p = queryParams, uc = NSURLComponents(URL: url, resolvingAgainstBaseURL: false) {
+			var q = encodeQuery(p)
+			if let oq = uc.percentEncodedQuery { q = oq + "&" }
+			if !q.isEmpty {
+				uc.percentEncodedQuery = q
+				if let uu = uc.URL { req.URL = uu }
 			}
-		} else {
-			if postASJSON {
-				if let p = params {
-					req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(p, options: [])
-					req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-				}
+
+		}
+
+		if postmode {
+			var jsonParams = params?[ParamMode.Json.rawValue] as? [String: AnyObject]
+			if postASJSON && jsonParams == nil { jsonParams = params }
+
+			if let p = jsonParams {
+				req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(p, options: [])
+				req.setValue("application/json", forHTTPHeaderField: "Content-Type")
 			}
-			else {
-				if hasMultipartFile(params) {
+
+			var formParams = params?[ParamMode.Form.rawValue] as? [String: AnyObject]
+			if !postASJSON && formParams == nil { formParams = params }
+
+			if let p = formParams {
+				if hasMultipartFile(p) {
 					let boundary = "Boundary" + NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
-					req.HTTPBody = encodeMultiPart(params, boundary: boundary)
+					req.HTTPBody = encodeMultiPart(p, boundary: boundary)
 					req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
 				} else {
-					req.HTTPBody = encodeQuery(params).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+					req.HTTPBody = encodeQuery(p).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
 					req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
 				}
 			}
 		}
-
-		// config header is auto merged
 
 		return req
 	}
@@ -266,11 +276,12 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 	public func request(method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: ResponseHandler) -> Task? {
 
 		guard let req = createRequest(method, urls, params: params, headers: headers) else {
-			handler(res: Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
+			handler(result: Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
 			return nil
 		}
 		return request(req, handler: handler)
 	}
+
 }
 
 // for debbug
@@ -321,13 +332,23 @@ public extension HTTP {
 		return requestASync(.GET, urls, params: nil, headers: headers)
 	}
 
+	// param for multi pattern
+	static func makeParams(query query: [String: AnyObject]? = nil, form: [String: AnyObject]? = nil, json: [String: AnyObject]? = nil) -> [String: AnyObject] {
+
+		var r: [String: AnyObject] = [:]
+		if let v = query { r[ParamMode.Query.rawValue] = v }
+		if let v = form { r[ParamMode.Form.rawValue] = v }
+		if let v = json { r[ParamMode.Json.rawValue] = v }
+		return r
+	}
+
 }
 
 // MARK: response
 public extension HTTP {
-	typealias ResponseHandler = ((res: Response) -> Void)
+	typealias ResponseHandler = ((result: Response) -> Void)
 
-	struct Response: CustomStringConvertible {
+	class Response: CustomStringConvertible {
 
 		public let data: NSData?
 		public let error: NSError?
@@ -343,7 +364,7 @@ public extension HTTP {
 			self.duration = duration
 		}
 
-		public init(error: NSError) {
+		public convenience init(error: NSError) {
 			self.init(data: nil, error: error, response: nil, request: nil, duration: 0)
 		}
 
@@ -359,11 +380,9 @@ public extension HTTP {
 		}
 
 		public var status: Int { return response?.statusCode ?? 0 }
-
 		public var dataValue: NSData { return data ?? NSData() }
 		public var stringValue: String { return string ?? "" }
 		public var jsonObjectValue: NSObject { return jsonObject ?? NSObject() }
-
 		public var headers: [String: String] { return response?.allHeaderFields as? [String: String] ?? [:] }
 
 		public var description: String {
