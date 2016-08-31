@@ -86,7 +86,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		}
 	}
 
-	enum ParamMode: String { case Query = "?query", Form = "?form", Json = "?json" }
+	public enum ParamMode: String { case Query = "?query", Form = "?form", Json = "?json" }
 
 	override init () {
 		super.init()
