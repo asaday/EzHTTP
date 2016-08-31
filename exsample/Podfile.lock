@@ -1,5 +1,5 @@
 PODS:
-  - EzHTTP (0.0.6)
+  - EzHTTP (0.0.7)
 
 DEPENDENCIES:
   - EzHTTP (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  EzHTTP: d1541e33fa9e96b1c55bee7d058165eba68097ca
+  EzHTTP: a8ef5552fa51b7348806ffa8ec606039d62ca8bd
 
 PODFILE CHECKSUM: cd2f40b5c2733d7790a0dcf3dd029530e31eedfd
 

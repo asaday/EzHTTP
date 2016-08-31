@@ -7,29 +7,29 @@ import Foundation
 
 // MARK: - NetworkIndicator
 
-public class NetworkIndicator: NSObject {
+open class NetworkIndicator: NSObject {
 	static let sharedManager = NetworkIndicator()
 	var states: [String: Bool] = [:]
-	var queues: [NSOperationQueue] = []
-	var indicatorTimer: NSTimer? = nil
+	var queues: [OperationQueue] = []
+	var indicatorTimer: Timer? = nil
 	var visible: Bool = false
 
-	public static func setState(key: String, _ state: Bool) { sharedManager.setState(key, state: state) }
-	public static func start(key: String) { sharedManager.setState(key, state: true) }
-	public static func stop(key: String) { sharedManager.setState(key, state: false) }
+	open static func setState(_ key: String, _ state: Bool) { sharedManager.setState(key, state: state) }
+	open static func start(_ key: String) { sharedManager.setState(key, state: true) }
+	open static func stop(_ key: String) { sharedManager.setState(key, state: false) }
 
-	public static func addOberveQueue(queue: NSOperationQueue?) {
+	open static func addOberveQueue(_ queue: OperationQueue?) {
 		guard let queue = queue else { return }
-		queue.addObserver(sharedManager, forKeyPath: "operationCount", options: .New, context: nil)
+		queue.addObserver(sharedManager, forKeyPath: "operationCount", options: .new, context: nil)
 		sharedManager.queues.append(queue)
 	}
-	public static func removeOberveQueue(queue: NSOperationQueue?) {
+	open static func removeOberveQueue(_ queue: OperationQueue?) {
 		guard let queue = queue else { return }
 		queue.removeObserver(sharedManager, forKeyPath: "operationCount")
-		if let idx = sharedManager.queues.indexOf(queue) { sharedManager.queues.removeAtIndex(idx) }
+		if let idx = sharedManager.queues.index(of: queue) { sharedManager.queues.remove(at: idx) }
 	}
 
-	override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String: AnyObject]?, context: UnsafeMutablePointer<Void>) {
+	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 		if keyPath != "operationCount" { return }
 		startIndicator()
 	}
@@ -47,7 +47,7 @@ public class NetworkIndicator: NSObject {
 		indicatorTimer = nil
 	}
 
-	func setState(key: String, state: Bool) {
+	func setState(_ key: String, state: Bool) {
 		states[key] = state
 		startIndicator()
 	}
@@ -56,14 +56,14 @@ public class NetworkIndicator: NSObject {
 		#if os(iOS)
 			if total <= 0 || visible { return }
 
-			dispatch_async(dispatch_get_main_queue()) {
+			DispatchQueue.main.async {
 				if self.total <= 0 { return }
 
-				UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+				UIApplication.shared.isNetworkActivityIndicatorVisible = true
 				self.visible = true
 
 				self.indicatorTimer?.invalidate()
-				self.indicatorTimer = NSTimer.scheduledTimerWithTimeInterval(0.3, target: self, selector: #selector(self.stopIndicator), userInfo: nil, repeats: true)
+				self.indicatorTimer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.stopIndicator), userInfo: nil, repeats: true)
 			}
 		#endif
 	}
@@ -71,8 +71,8 @@ public class NetworkIndicator: NSObject {
 	func stopIndicator() {
 		#if os(iOS)
 			if total > 0 { return }
-			dispatch_async(dispatch_get_main_queue()) {
-				UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+			DispatchQueue.main.async {
+				UIApplication.shared.isNetworkActivityIndicatorVisible = false
 				self.visible = false
 				self.indicatorTimer?.invalidate()
 				self.indicatorTimer = nil

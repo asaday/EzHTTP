@@ -9,9 +9,9 @@ class EzHTTPSampleTests: XCTestCase {
 
 	var host = "http://httpbin.org" // or https
 
-	func findJSONString(json: NSObject?, path: String) -> String {
+	func findJSONString(_ json: NSObject?, path: String) -> String {
 		guard let json = json else { return "" }
-		var paths = path.componentsSeparatedByString("/")
+		var paths = path.components(separatedBy: "/")
 		let last = paths.removeLast()
 		guard var dst: [String: AnyObject] = json as? [String: AnyObject] else { return "" }
 		for p in paths {
@@ -35,41 +35,41 @@ class EzHTTPSampleTests: XCTestCase {
 //    }
 
 	func testGet() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
 		HTTP.get(host + "/get?a=b") { (res) in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testGetParam() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/get", params: ["a": "b"], headers: ["Aaa": "bbb"]) { (res) in
+		HTTP.get(host + "/get", params: ["a": "b" as AnyObject], headers: ["Aaa": "bbb"]) { (res) in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "headers/Aaa"), "bbb")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testGetRedirect() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
 		HTTP.get(host + "/redirect/3") { (res) in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "url"), self.host + "/get")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testGetPNG() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
 		HTTP.get(host + "/image/png") { (res) in
 			XCTAssertNil(res.error)
@@ -77,15 +77,15 @@ class EzHTTPSampleTests: XCTestCase {
 			XCTAssertNotNil(img)
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testCookie() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
-		NSHTTPCookieStorage.sharedHTTPCookieStorage().removeCookiesSinceDate(NSDate(timeIntervalSince1970: 0))
+		HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
 
-		let cv = NSUUID().UUIDString
+		let cv = UUID().uuidString
 
 		HTTP.get(host + "/cookies/set?k2=v2&k1=\(cv)") { (res) in
 			print(res.stringValue)
@@ -95,7 +95,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 				var r: [String: String] = [:]
 
-				if let cookies = NSHTTPCookieStorage.sharedHTTPCookieStorage().cookies {
+				if let cookies = HTTPCookieStorage.shared.cookies {
 					for c in cookies {
 						if c.domain == "httpbin.org" { r[c.name] = c.value }
 					}
@@ -106,49 +106,49 @@ class EzHTTPSampleTests: XCTestCase {
 				expectation.fulfill()
 			}
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testPost() {
-		let expectation = expectationWithDescription("")
-		HTTP.request(.POST, host + "/post", params: ["a": "b"]) { (res) in
+		let expectation = self.expectation(description: "")
+		HTTP.request(.POST, host + "/post", params: ["a": "b" as AnyObject]) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testPostMQ() {
-		let expectation = expectationWithDescription("")
-		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in
+		let expectation = self.expectation(description: "")
+		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p" as AnyObject], form: ["a": "b" as AnyObject])) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/q"), "p")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testPostFile() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
-		let file = HTTP.MultipartFile(mime: "iage/png", filename: "name", data: "aaa".dataUsingEncoding(NSUTF8StringEncoding)!)
+		let file = HTTP.MultipartFile(mime: "iage/png", filename: "name", data: "aaa".data(using: String.Encoding.utf8)!)
 
-		HTTP.request(.POST, host + "/post", params: ["a": "b", "c": file]) { (res) in
+		HTTP.request(.POST, host + "/post", params: ["a": "b" as AnyObject, "c": file]) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "files/c"), "aaa")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 	}
 
 	func testGetRedirectHTTPS() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
 		// first call is HTTP,and eveolute to HTTPS by server redirect
 		HTTP.get(host + "/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fget%3Fa=b") { (res) in
@@ -156,19 +156,19 @@ class EzHTTPSampleTests: XCTestCase {
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(5, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 
 	}
 
 	func testChunk() {
-		let expectation = expectationWithDescription("")
+		let expectation = self.expectation(description: "")
 
 		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { (res) in
 			// HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
 			XCTAssertNil(res.error)
 			expectation.fulfill()
 		}
-		waitForExpectationsWithTimeout(15, handler: nil)
+		waitForExpectations(timeout: 15, handler: nil)
 
 	}
 
