@@ -2,7 +2,6 @@
 // Copyright (c) NagisaWorks asaday
 // The MIT License (MIT)
 
-
 import Foundation
 
 // MARK: - NetworkIndicator
@@ -29,7 +28,7 @@ open class NetworkIndicator: NSObject {
 		if let idx = sharedManager.queues.index(of: queue) { sharedManager.queues.remove(at: idx) }
 	}
 
-	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
 		if keyPath != "operationCount" { return }
 		startIndicator()
 	}

@@ -7,7 +7,7 @@ import Foundation
 class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
 	var request: URLRequest
-	let completion: (Data?, URLResponse?, Error?) -> Void
+	let completion: (Data?, HTTPURLResponse?, NSError?) -> Void
 
 	var socket: GCDAsyncSocket?
 	var url: URL!
@@ -41,7 +41,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
 	static let dqueue = DispatchQueue(label: "com.nagisa.httpopration", attributes: [])
 
-	init(request: URLRequest, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+	init(request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) {
 		self.request = request
 		self.completion = completion
 		super.init()
@@ -168,7 +168,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		var dat = headlines.joined(separator: "\r\n").data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data()
 		if let d = request.httpBody { dat.append(d) }
 
-		socket?.write(dat , withTimeout: request.timeoutInterval, tag: 0)
+		socket?.write(dat, withTimeout: request.timeoutInterval, tag: 0)
 		socket?.readData(to: CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
 	}
 

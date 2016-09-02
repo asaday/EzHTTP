@@ -7,7 +7,7 @@ import EzHTTP
 
 class EzHTTPSampleTests: XCTestCase {
 
-	var host = "http://httpbin.org" // or https
+	var host = "https://httpbin.org" // or https
 
 	func findJSONString(_ json: NSObject?, path: String) -> String {
 		guard let json = json else { return "" }

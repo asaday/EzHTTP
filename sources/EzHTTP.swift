@@ -6,8 +6,8 @@ import Foundation
 
 public extension URLRequest {
 	init(string str: String) {
-		self.init(url:URL(string: str)!)
-		//(self as NSURLRequest).init(url: URL(string: str) ?? URL())
+		self.init(url: URL(string: str)!)
+		// (self as NSURLRequest).init(url: URL(string: str) ?? URL())
 	}
 }
 
@@ -15,13 +15,16 @@ public extension URLRequest {
 
 public extension URLSession {
 
-	func requestData(_ request: URLRequest, _ completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
-		let task = dataTask(with: request, completionHandler: completionHandler)
+	func requestData(_ request: URLRequest, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
+		let task = dataTask(with: request) { (d, r, e) in
+			completionHandler(d, r as? HTTPURLResponse, e as? NSError)
+		}
+
 		task.resume()
 		return task
 	}
 
-	func get(_ urls: String, _ completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask? {
+	func get(_ urls: String, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
 		guard let url = URL(string: urls) else { return nil }
 		return requestData(URLRequest(url: url), completionHandler)
 	}
@@ -30,8 +33,10 @@ public extension URLSession {
 // for files
 public extension URLSession {
 
-	func requestFile(_ request: URLRequest, _ completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask {
-		let task = downloadTask(with: request, completionHandler: completionHandler )
+	func requestFile(_ request: URLRequest, _ completionHandler: @escaping (URL?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDownloadTask {
+		let task = downloadTask(with: request) { (u, r, e) in
+			completionHandler(u, r as? HTTPURLResponse, e as? NSError)
+		}
 		task.resume()
 		return task
 	}
@@ -129,10 +134,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 		let startTime = Date()
 		let task = Task()
 
-		let comp: ((Data?, URLResponse?, Error?) -> Void) = { data, response, error in
-			let hresponse = response as? HTTPURLResponse
+		let comp: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { (data, response, error) in
 			let duration = Date().timeIntervalSince(startTime)
-			let res = Response(data: data, error: error, response: hresponse, request: request, duration: duration)
+			let res = Response(data: data, error: error, response: response, request: request, duration: duration)
 			if isMain {
 				DispatchQueue.main.async { handlecall(res) }
 			} else {
@@ -222,10 +226,10 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return r as Data
 	}
 
-	open func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> NSMutableURLRequest? {
+	open func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> URLRequest? {
 		guard let url = URL(string: urls, relativeTo: baseURL) else { return nil }
 
-		let req = NSMutableURLRequest(url: url)
+		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
@@ -296,19 +300,19 @@ extension HTTP {
 // MARK: static
 
 public extension HTTP {
-	static func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> NSMutableURLRequest? {
+	static func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> URLRequest? {
 		return shared.createRequest(method, urls, params: params, headers: headers)
 	}
 
-	static func request(_ request: URLRequest, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func request(_ request: URLRequest, _ handler: ResponseHandler) -> Task? {
 		return shared.request(request, handler: handler)
 	}
 
-	static func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
 		return shared.request(method, urls, params: params, headers: headers, handler: handler)
 	}
 
-	static func get(_ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func get(_ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
 		return shared.request(.GET, urls, params: params, headers: headers, handler: handler)
 	}
 
@@ -338,8 +342,8 @@ public extension HTTP {
 
 		var r: [String: AnyObject] = [:]
 		if let v = query { r[ParamMode.Query.rawValue] = v as AnyObject }
-		if let v = form { r[ParamMode.Form.rawValue] = v as AnyObject}
-		if let v = json { r[ParamMode.Json.rawValue] = v as AnyObject}
+		if let v = form { r[ParamMode.Form.rawValue] = v as AnyObject }
+		if let v = json { r[ParamMode.Json.rawValue] = v as AnyObject }
 		return r
 	}
 
@@ -352,12 +356,12 @@ public extension HTTP {
 	class Response: CustomStringConvertible {
 
 		open let data: Data?
-		open let error: Error?
+		open let error: NSError?
 		open let response: HTTPURLResponse?
 		open let request: URLRequest?
 		open let duration: TimeInterval?
 
-		public init(data: Data?, error: Error?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval?) {
+		public init(data: Data?, error: NSError?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval?) {
 			self.data = data
 			self.error = error
 			self.response = response
@@ -365,7 +369,7 @@ public extension HTTP {
 			self.duration = duration
 		}
 
-		public convenience init(error: Error) {
+		public convenience init(error: NSError) {
 			self.init(data: nil, error: error, response: nil, request: nil, duration: 0)
 		}
 
