@@ -149,6 +149,7 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		agent += (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") as? String ?? "") + "/" + (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as? String ?? "") + " "
 		agent += "CFNetwork/758.99.99 Darwin/15.6.99 "
 		agent += "EzHTTP/1"
+		// TODO: better to use NSUserDefaults
 
 		var headers: [String: String] = ["Accept": "*/*", "User-Agent": agent]
 		if let reqheaders = request.allHTTPHeaderFields {
