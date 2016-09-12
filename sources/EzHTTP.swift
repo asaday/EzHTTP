@@ -106,7 +106,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		NetworkIndicator.removeOberveQueue(hqueue)
 	}
 
-	open func request(_ request: URLRequest, handler: ResponseHandler) -> Task? {
+	open func request(_ request: URLRequest, handler: @escaping ResponseHandler) -> Task? {
 
 		let handlecall: ((_ res: Response) -> Void) = { result in
 			if result.data == nil { self.errorHandler?(result) }
@@ -278,7 +278,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return req
 	}
 
-	open func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: ResponseHandler) -> Task? {
+	open func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
 
 		guard let req = createRequest(method, urls, params: params, headers: headers) else {
 			handler(Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
@@ -304,15 +304,15 @@ public extension HTTP {
 		return shared.createRequest(method, urls, params: params, headers: headers)
 	}
 
-	@discardableResult static func request(_ request: URLRequest, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func request(_ request: URLRequest, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(request, handler: handler)
 	}
 
-	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(method, urls, params: params, headers: headers, handler: handler)
 	}
 
-	@discardableResult static func get(_ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: ResponseHandler) -> Task? {
+	@discardableResult static func get(_ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(.GET, urls, params: params, headers: headers, handler: handler)
 	}
 

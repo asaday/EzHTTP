@@ -17,4 +17,8 @@ s.requires_arc = true
 s.module_map = 'resources/module.modulemap'
 s.private_header_files = "sources/GCDAsyncSocket.h"
 
+s.xcconfig = {
+    'SWIFT_VERSION' => '3'
+  }
+ 
 end
