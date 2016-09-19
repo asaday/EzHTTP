@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "EzHTTP"
-s.version      = "0.0.7"
+s.version      = "3.0.7"
 s.summary      = "Easy HTTP access library"
 
 s.homepage     = "http://nagisaworks.com"
@@ -18,7 +18,7 @@ s.module_map = 'resources/module.modulemap'
 s.private_header_files = "sources/GCDAsyncSocket.h"
 
 s.xcconfig = {
-    'SWIFT_VERSION' => '3'
+    'SWIFT_VERSION' => '3.0'
   }
  
 end
