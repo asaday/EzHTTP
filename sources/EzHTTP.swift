@@ -86,7 +86,7 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 		}
 	}
 
-	public enum ParamMode: String { case Query = "?query", Form = "?form", Json = "?json" }
+	public enum ParamMode: String { case Query = "???Query", Form = "???Form", Json = "???Json", MultipartForm = "???MultipartForm" }
 
 	override init () {
 		super.init()
@@ -245,29 +245,44 @@ public class HTTP: NSObject, NSURLSessionDelegate {
 
 		}
 
-		if postmode {
-			var jsonParams = params?[ParamMode.Json.rawValue] as? [String: AnyObject]
-			if postASJSON && jsonParams == nil { jsonParams = params }
+		if !postmode { return req }
+		var sp = params
+		var mode = ParamMode.Form
+		if postASJSON { mode = .Json }
 
-			if let p = jsonParams {
-				req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(p, options: [])
-				req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-			}
+		if let r = params?[ParamMode.Json.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .Json
+		}
 
-			var formParams = params?[ParamMode.Form.rawValue] as? [String: AnyObject]
-			if !postASJSON && formParams == nil { formParams = params }
+		if let r = params?[ParamMode.Form.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .Form
+		}
 
-			if let p = formParams {
-				if hasMultipartFile(p) {
-					let boundary = "Boundary" + NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
-					req.HTTPBody = encodeMultiPart(p, boundary: boundary)
-					req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+		if let r = params?[ParamMode.MultipartForm.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .MultipartForm
+		}
 
-				} else {
-					req.HTTPBody = encodeQuery(p).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-					req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-				}
-			}
+		if !postASJSON && hasMultipartFile(sp) { mode = .MultipartForm }
+
+		guard let p = sp else { return req }
+		switch mode {
+		case .Json:
+			req.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(p, options: [])
+			req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+		case .Form:
+			req.HTTPBody = encodeQuery(p).dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+			req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+
+		case .MultipartForm:
+			let boundary = "Boundary" + NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+			req.HTTPBody = encodeMultiPart(p, boundary: boundary)
+			req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+		default:
+			break
 		}
 
 		return req
