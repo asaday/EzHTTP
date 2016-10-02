@@ -27,13 +27,13 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		guard let url = url else { return false }
 		if url.scheme != "http" { return false }
 
-		guard let dic = Bundle.main.object(forInfoDictionaryKey: "NSAppTransportSecurity") as? [String: AnyObject] else { return true }
+		guard let dic = Bundle.main.object(forInfoDictionaryKey: "NSAppTransportSecurity") as? [String: Any] else { return true }
 
 		if dic["NSAllowsArbitraryLoads"] as? Bool ?? false { return false }
-		guard let domains = dic["NSExceptionDomains"] as? [String: AnyObject] else { return true }
+		guard let domains = dic["NSExceptionDomains"] as? [String: Any] else { return true }
 		for (k, v) in domains {
 			if k != url.host { continue }
-			guard let dkv = v as? [String: AnyObject] else { continue }
+			guard let dkv = v as? [String: Any] else { continue }
 			if dkv["NSExceptionAllowsInsecureHTTPLoads"] as? Bool ?? false { return false }
 		}
 		return true
@@ -116,11 +116,11 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
 	}
 
-	func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: NSError?) {
+	func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
 		if !isExecuting { return }
 
 		if let e = err {
-			compError(e)
+			compError(e as NSError)
 			return
 		}
 
@@ -140,7 +140,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 	func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
 
 		var headlines: [String] = []
-		var path = url.path ?? ""
+		var path = url.path 
 		if let q = url.query { path += "?" + q }
 		headlines.append("\(request.httpMethod!) \(path) HTTP/1.1")
 		headlines.append("Host: \(url.host ?? "")")

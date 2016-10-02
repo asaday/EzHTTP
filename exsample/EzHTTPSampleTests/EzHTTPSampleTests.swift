@@ -13,9 +13,9 @@ class EzHTTPSampleTests: XCTestCase {
 		guard let json = json else { return "" }
 		var paths = path.components(separatedBy: "/")
 		let last = paths.removeLast()
-		guard var dst: [String: AnyObject] = json as? [String: AnyObject] else { return "" }
+		guard var dst: [String: Any] = json as? [String: Any] else { return "" }
 		for p in paths {
-			guard let s = dst[p] as? [String: AnyObject] else { return "" }
+			guard let s = dst[p] as? [String: Any] else { return "" }
 			dst = s
 		}
 		return dst[last] as? String ?? ""
@@ -48,7 +48,7 @@ class EzHTTPSampleTests: XCTestCase {
 	func testGetParam() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/get", params: ["a": "b" as AnyObject], headers: ["Aaa": "bbb"]) { (res) in
+		HTTP.get(host + "/get", params: ["a": "b"], headers: ["Aaa": "bbb"]) { (res) in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "headers/Aaa"), "bbb")
@@ -111,7 +111,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testPost() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: ["a": "b" as AnyObject]) { (res) in
+		HTTP.request(.POST, host + "/post", params: ["a": "b"]) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
@@ -122,7 +122,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testPostMQ() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p" as AnyObject], form: ["a": "b" as AnyObject])) { (res) in
+		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
@@ -137,7 +137,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 		let file = HTTP.MultipartFile(mime: "iage/png", filename: "name", data: "aaa".data(using: String.Encoding.utf8)!)
 
-		HTTP.request(.POST, host + "/post", params: ["a": "b" as AnyObject, "c": file]) { (res) in
+		HTTP.request(.POST, host + "/post", params: ["a": "b", "c": file]) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")

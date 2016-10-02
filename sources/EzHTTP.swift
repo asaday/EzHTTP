@@ -7,7 +7,6 @@ import Foundation
 public extension URLRequest {
 	init(string str: String) {
 		self.init(url: URL(string: str)!)
-		// (self as NSURLRequest).init(url: URL(string: str) ?? URL())
 	}
 }
 
@@ -92,7 +91,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		}
 	}
 
-	public enum ParamMode: String { case Query = "?query", Form = "?form", Json = "?json" }
+	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm" }
 
 	override init () {
 		super.init()
@@ -110,7 +109,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		let handlecall: ((_ res: Response) -> Void) = { result in
 			if result.data == nil { self.errorHandler?(result) }
-			else { self.successHandler?(result) }
+				else { self.successHandler?(result) }
 			self.logHandler?(result)
 			handler(result)
 		}
@@ -163,7 +162,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return task
 	}
 
-	func encodeQuery(_ params: [String: AnyObject]?) -> String {
+	func encodeQuery(_ params: [String: Any]?) -> String {
 
 		func escape(_ v: String) -> String {
 			var cs = NSMutableCharacterSet.urlQueryAllowed
@@ -171,13 +170,13 @@ open class HTTP: NSObject, URLSessionDelegate {
 			return v.addingPercentEncoding(withAllowedCharacters: cs) ?? v
 		}
 
-		func encode(_ key: String, _ value: AnyObject) -> [String] {
+		func encode(_ key: String, _ value: Any) -> [String] {
 			var r: [String] = []
 
 			switch value {
-			case let dic as [String: AnyObject]:
+			case let dic as [String: Any]:
 				for (k, v) in dic { r += encode("\(key)[\(k)]", v) }
-			case let ar as [AnyObject]:
+			case let ar as [Any]:
 				for v in ar { r += encode("\(key)[]", v) }
 			case let s as String:
 				r.append(escape(key) + "=" + escape(s))
@@ -195,7 +194,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return r.joined(separator: "&")
 	}
 
-	func hasMultipartFile(_ params: [String: AnyObject]?) -> Bool {
+	func hasMultipartFile(_ params: [String: Any]?) -> Bool {
 		guard let params = params else { return false }
 		for v in params.values {
 			if v is MultipartFile { return true }
@@ -203,7 +202,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return false
 	}
 
-	func encodeMultiPart(_ params: [String: AnyObject]?, boundary: String) -> Data {
+	func encodeMultiPart(_ params: [String: Any]?, boundary: String) -> Data {
 		guard let params = params else { return Data() }
 		let r = NSMutableData()
 
@@ -216,7 +215,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		for (k, v) in params {
 			guard let d = v as? MultipartFile else { continue }
 			r.appendString("--\(boundary)\r\n")
-			r.appendString("Content-Disposition: form-data; name=\"\(k)\"; filename=\"\(d.filename )\"\r\n")
+			r.appendString("Content-Disposition: form-data; name=\"\(k)\"; filename=\"\(d.filename)\"\r\n")
 			r.appendString("Content-Type: \(d.mime)\r\n\r\n")
 			r.append(d.data)
 			r.appendString("\r\n")
@@ -226,7 +225,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return r as Data
 	}
 
-	open func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> URLRequest? {
+	open func createRequest(_ method: Method, _ urls: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
 		guard let url = URL(string: urls, relativeTo: baseURL) else { return nil }
 
 		var req = URLRequest(url: url)
@@ -237,7 +236,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		let postmode = (method == .POST || method == .PUT || method == .PATCH)
 
-		var queryParams = params?[ParamMode.Query.rawValue] as? [String: AnyObject]
+		var queryParams = params?[ParamMode.query.rawValue] as? [String: Any]
 		if !postmode && queryParams == nil { queryParams = params }
 
 		if let p = queryParams, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
@@ -250,35 +249,52 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		}
 
-		if postmode {
-			var jsonParams = params?[ParamMode.Json.rawValue] as? [String: AnyObject]
-			if postASJSON && jsonParams == nil { jsonParams = params }
+		if !postmode { return req }
 
-			if let p = jsonParams {
-				req.httpBody = try? JSONSerialization.data(withJSONObject: p, options: [])
-				req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-			}
+		var sp = params
+		var mode = ParamMode.form
+		if postASJSON { mode = .json }
 
-			var formParams = params?[ParamMode.Form.rawValue] as? [String: AnyObject]
-			if !postASJSON && formParams == nil { formParams = params }
+		if let r = params?[ParamMode.json.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .json
+		}
 
-			if let p = formParams {
-				if hasMultipartFile(p) {
-					let boundary = "Boundary" + UUID().uuidString.replacingOccurrences(of: "-", with: "")
-					req.httpBody = encodeMultiPart(p, boundary: boundary)
-					req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+		if let r = params?[ParamMode.form.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .form
+		}
 
-				} else {
-					req.httpBody = encodeQuery(p).data(using: String.Encoding.utf8, allowLossyConversion: true)
-					req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-				}
-			}
+		if let r = params?[ParamMode.multipartForm.rawValue] as? [String: AnyObject] {
+			sp = r
+			mode = .multipartForm
+		}
+
+		if !postASJSON && hasMultipartFile(sp) { mode = .multipartForm }
+
+		guard let p = sp else { return req }
+		switch mode {
+		case .json:
+			req.httpBody = try? JSONSerialization.data(withJSONObject: p, options: [])
+			req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+		case .form:
+			req.httpBody = encodeQuery(p).data(using: String.Encoding.utf8, allowLossyConversion: true)
+			req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+
+		case .multipartForm:
+			let boundary = "Boundary" + NSUUID().uuidString.replacingOccurrences(of: "-", with: "")
+			req.httpBody = encodeMultiPart(p, boundary: boundary)
+			req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+		default:
+			break
 		}
 
 		return req
 	}
 
-	open func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
+	open func request(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
 
 		guard let req = createRequest(method, urls, params: params, headers: headers) else {
 			handler(Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
@@ -300,7 +316,7 @@ extension HTTP {
 // MARK: static
 
 public extension HTTP {
-	static func createRequest(_ method: Method, _ urls: String, params: [String: AnyObject]?, headers: [String: String]?) -> URLRequest? {
+	static func createRequest(_ method: Method, _ urls: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
 		return shared.createRequest(method, urls, params: params, headers: headers)
 	}
 
@@ -308,11 +324,11 @@ public extension HTTP {
 		return shared.request(request, handler: handler)
 	}
 
-	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(method, urls, params: params, headers: headers, handler: handler)
 	}
 
-	@discardableResult static func get(_ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+	@discardableResult static func get(_ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(.GET, urls, params: params, headers: headers, handler: handler)
 	}
 
@@ -326,7 +342,7 @@ public extension HTTP {
 		return r
 	}
 
-	static func requestASync(_ method: Method, _ urls: String, params: [String: AnyObject]? = nil, headers: [String: String]? = nil) -> Response {
+	static func requestASync(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
 		guard let req = HTTP.createRequest(method, urls, params: params, headers: headers) else {
 			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
 		}
@@ -338,12 +354,12 @@ public extension HTTP {
 	}
 
 	// param for multi pattern
-	static func makeParams(query: [String: AnyObject]? = nil, form: [String: AnyObject]? = nil, json: [String: AnyObject]? = nil) -> [String: AnyObject] {
+	static func makeParams(query: [String: Any]? = nil, form: [String: Any]? = nil, json: [String: Any]? = nil) -> [String: Any] {
 
-		var r: [String: AnyObject] = [:]
-		if let v = query { r[ParamMode.Query.rawValue] = v as AnyObject }
-		if let v = form { r[ParamMode.Form.rawValue] = v as AnyObject }
-		if let v = json { r[ParamMode.Json.rawValue] = v as AnyObject }
+		var r: [String: Any] = [:]
+		if let v = query { r[ParamMode.query.rawValue] = v }
+		if let v = form { r[ParamMode.form.rawValue] = v }
+		if let v = json { r[ParamMode.json.rawValue] = v }
 		return r
 	}
 
@@ -393,14 +409,14 @@ public extension HTTP {
 		open var description: String {
 			var result = "[Res] "
 			result += request?.url?.absoluteString ?? "unknownURL"
-			result += " (\( Int((duration ?? 0) * 1000) )ms)\n"
+			result += " (\( Int((duration ?? 0) * 1000))ms)\n"
 
 			if let e = error { result += "Error:" + e.localizedDescription }
 
 			if let d = data {
 				if let s = String(data: d, encoding: String.Encoding.utf8) {
 					if s.characters.count < 24 { result += s }
-					else { result += (s as NSString).substring(to: 24) + "...length: \(s.characters.count)" }
+						else { result += (s as NSString).substring(to: 24) + "...length: \(s.characters.count)" }
 				} else {
 					return "data length: \(d.count / 1024) KB"
 				}
