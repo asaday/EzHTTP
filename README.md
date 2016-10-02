@@ -7,7 +7,9 @@ EzHTTP is easy-to-use library for HTTP access for your iOS application.
 ## Requirements
 
 - iOS 8.0+
-- Xcode 7+
+- Xcode 8+ (for swift3)
+
+(for swift 2.x , use version 0.0.x)
 
 ## Installation
 
