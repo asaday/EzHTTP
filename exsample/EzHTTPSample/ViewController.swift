@@ -10,7 +10,7 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		HTTP.shared.config.HTTPMaximumConnectionsPerHost = 6
+		HTTP.shared.config.httpMaximumConnectionsPerHost = 6
 		HTTP.shared.config.timeoutIntervalForRequest = 15
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
 

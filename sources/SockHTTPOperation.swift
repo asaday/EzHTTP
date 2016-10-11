@@ -4,70 +4,70 @@
 
 import Foundation
 
-class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
+class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
-	var request: NSURLRequest
-	let completion: (NSData?, NSURLResponse?, NSError?) -> Void
+	var request: URLRequest
+	let completion: (Data?, HTTPURLResponse?, NSError?) -> Void
 
 	var socket: GCDAsyncSocket?
-	var url: NSURL = NSURL()
-	var response: NSHTTPURLResponse!
+	var url: URL!
+	var response: HTTPURLResponse!
 	var redirectCount: Int = 0
 
-	var rehttpsSession: NSURLSession?
-	var rehttpsTask: NSURLSessionDataTask?
+	var rehttpsSession: URLSession?
+	var rehttpsTask: URLSessionDataTask?
 
-	enum Sequence: Int { case Header, Body, ChunkedLength, ChunkedBody, ChunkBodyTail }
-	var sequence: Sequence = .Header
+	enum Sequence: Int { case header, body, chunkedLength, chunkedBody, chunkBodyTail }
+	var sequence: Sequence = .header
 	var chunkData: NSMutableData?
-	let CRLFData = NSData(bytes: [UInt8]([0x0d, 0x0a]), length: 2)
-	let CRLFCRLFData = NSData(bytes: [UInt8]([0x0d, 0x0a, 0x0d, 0x0a]), length: 4)
+	let CRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0d, 0x0a])), count: 2)
+	let CRLFCRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0d, 0x0a, 0x0d, 0x0a])), count: 4)
 
-	class func isATSBlocked(url: NSURL?) -> Bool {
+	class func isATSBlocked(_ url: URL?) -> Bool {
 		guard let url = url else { return false }
 		if url.scheme != "http" { return false }
 
-		guard let dic = NSBundle.mainBundle().objectForInfoDictionaryKey("NSAppTransportSecurity") as? [String: AnyObject] else { return true }
+		guard let dic = Bundle.main.object(forInfoDictionaryKey: "NSAppTransportSecurity") as? [String: Any] else { return true }
 
 		if dic["NSAllowsArbitraryLoads"] as? Bool ?? false { return false }
-		guard let domains = dic["NSExceptionDomains"] as? [String: AnyObject] else { return true }
+		guard let domains = dic["NSExceptionDomains"] as? [String: Any] else { return true }
 		for (k, v) in domains {
 			if k != url.host { continue }
-			guard let dkv = v as? [String: AnyObject] else { continue }
+			guard let dkv = v as? [String: Any] else { continue }
 			if dkv["NSExceptionAllowsInsecureHTTPLoads"] as? Bool ?? false { return false }
 		}
 		return true
 	}
 
-	static let dqueue = dispatch_queue_create("com.nagisa.httpopration", nil)
+	static let dqueue = DispatchQueue(label: "com.nagisa.httpopration", attributes: [])
 
-	init(request: NSURLRequest, completion: (NSData?, NSURLResponse?, NSError?) -> Void) {
+	init(request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) {
 		self.request = request
 		self.completion = completion
 		super.init()
 	}
 
-	override var asynchronous: Bool {
+	override var isAsynchronous: Bool {
 		return true
 	}
 
-	private var _executing: Bool = false
-	override var executing: Bool {
+	fileprivate var _executing: Bool = false
+	override var isExecuting: Bool {
 		get { return _executing }
 		set {
-			willChangeValueForKey("isExecuting")
+			willChangeValue(forKey: "isExecuting")
 			_executing = newValue
-			didChangeValueForKey("isExecuting")
+			didChangeValue(forKey: "isExecuting")
 		}
 	}
 
-	private var _finished: Bool = false
-	override var finished: Bool {
+	fileprivate var _finished: Bool = false
+	override var isFinished: Bool {
 		get { return _finished }
 		set {
-			willChangeValueForKey("isFinished")
+			willChangeValue(forKey: "isFinished")
 			_finished = newValue
-			didChangeValueForKey("isFinished")
+			didChangeValue(forKey: "isFinished")
 		}
 	}
 
@@ -78,29 +78,29 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 	}
 
 	override func start() {
-		if cancelled {
-			finished = true
+		if isCancelled {
+			isFinished = true
 			return
 		}
-		guard let u = request.URL, _ = request.HTTPMethod else {
+		guard let u = request.url, let _ = request.httpMethod else {
 			let error = NSError(domain: "http", code: 1, userInfo: [NSLocalizedDescriptionKey: ""])
 			completion(nil, nil, error)
-			finished = true
+			isFinished = true
 			return
 		}
 		url = u
 
-		executing = true
+		isExecuting = true
 		main()
 	}
 
 	override func main() {
-		if cancelled {
+		if isCancelled {
 			done()
 			return
 		}
 
-		guard let host = url.host, _ = url.path else {
+		guard let host = url.host else {
 			compError(2, msg: "")
 			return
 		}
@@ -108,7 +108,7 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		socket = GCDAsyncSocket(delegate: self, delegateQueue: SockHTTPOperation.dqueue)
 
 		do {
-			try socket?.connectToHost(host, onPort: UInt16(url.port?.intValue ?? 80), withTimeout: request.timeoutInterval)
+			try socket?.connect(toHost: host, onPort: UInt16(url.port ?? 80), withTimeout: request.timeoutInterval)
 		} catch let e as NSError {
 			compError(e)
 			return
@@ -116,37 +116,37 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 
 	}
 
-	func socketDidDisconnect(sock: GCDAsyncSocket, withError err: NSError?) {
-		if !executing { return }
+	func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
+		if !isExecuting { return }
 
 		if let e = err {
-			compError(e)
+			compError(e as NSError)
 			return
 		}
 
 		done()
 	}
 
-	func socket(sock: GCDAsyncSocket, shouldTimeoutReadWithTag tag: Int, elapsed: NSTimeInterval, bytesDone length: UInt) -> NSTimeInterval {
+	func socket(_ sock: GCDAsyncSocket, shouldTimeoutReadWithTag tag: Int, elapsed: TimeInterval, bytesDone length: UInt) -> TimeInterval {
 		compError(8, msg: "timeout r")
 		return -1
 	}
 
-	func socket(sock: GCDAsyncSocket, shouldTimeoutWriteWithTag tag: Int, elapsed: NSTimeInterval, bytesDone length: UInt) -> NSTimeInterval {
+	func socket(_ sock: GCDAsyncSocket, shouldTimeoutWriteWithTag tag: Int, elapsed: TimeInterval, bytesDone length: UInt) -> TimeInterval {
 		compError(8, msg: "timeout w")
 		return -1
 	}
 
-	func socket(sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+	func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
 
 		var headlines: [String] = []
-		var path = url.path ?? ""
+		var path = url.path 
 		if let q = url.query { path += "?" + q }
-		headlines.append("\(request.HTTPMethod!) \(path) HTTP/1.1")
+		headlines.append("\(request.httpMethod!) \(path) HTTP/1.1")
 		headlines.append("Host: \(url.host ?? "")")
 
 		var agent = "" // "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_0 like Mac OS X) AppleWebKit/601.0.0 (KHTML, like Gecko) Version/10.0 Mobile/13F69 Safari/601.0 "
-		agent += (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") as? String ?? "") + "/" + (NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as? String ?? "") + " "
+		agent += (Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "") + "/" + (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "") + " "
 		agent += "CFNetwork/758.99.99 Darwin/15.6.99 "
 		agent += "EzHTTP/1"
 		// TODO: better to use NSUserDefaults
@@ -155,33 +155,32 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		if let reqheaders = request.allHTTPHeaderFields {
 			for (k, v) in reqheaders { headers[k] = v }
 		}
-		if let cookies = NSHTTPCookieStorage.sharedHTTPCookieStorage().cookiesForURL(url) {
-			let cheaders = NSHTTPCookie.requestHeaderFieldsWithCookies(cookies)
+		if let cookies = HTTPCookieStorage.shared.cookies(for: url) {
+			let cheaders = HTTPCookie.requestHeaderFields(with: cookies)
 			for (k, v) in cheaders { headers[k] = v }
 		}
 
-		if let d = request.HTTPBody { headers["Content-Length"] = "\(d.length)" }
+		if let d = request.httpBody { headers["Content-Length"] = "\(d.count)" }
 
-		headlines.appendContentsOf(headers.map { "\($0): \($1)" })
+		headlines.append(contentsOf: headers.map { "\($0): \($1)" })
 		headlines.append("")
 		headlines.append("")
 
-		let dat: NSMutableData = headlines.joinWithSeparator("\r\n").dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) as! NSMutableData
+		var dat = headlines.joined(separator: "\r\n").data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data()
+		if let d = request.httpBody { dat.append(d) }
 
-		if let d = request.HTTPBody { dat.appendData(d) }
-
-		socket?.writeData(dat, withTimeout: request.timeoutInterval, tag: 0)
-		socket?.readDataToData(CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
+		socket?.write(dat, withTimeout: request.timeoutInterval, tag: 0)
+		socket?.readData(to: CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
 	}
 
-	func socket(sock: GCDAsyncSocket, didReadData data: NSData, withTag tag: Int) {
-		if cancelled {
+	func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
+		if isCancelled {
 			done()
 			return
 		}
 
 		switch sequence {
-		case .Header:
+		case .header:
 			guard let r = makeResponse(data) else {
 				compError(3, msg: "http make response error")
 				return
@@ -195,16 +194,15 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 
 				if let location = r.allHeaderFields["Location"] as? String {
 					closeSocket()
-					url = NSURL(string: location, relativeToURL: url) ?? url
+					url = URL(string: location, relativeTo: url) ?? url
 					if url.scheme == "https" {
-						if let nreq = request.mutableCopy() as? NSMutableURLRequest {
-							nreq.URL = url
-							rehttpsTask = rehttpsSession?.requestData(nreq, { (d, r, e) in
-								if !self.cancelled { self.completion(d, r, e) }
-								self.done()
-							})
-							return
-						}
+						var nreq = request
+						nreq.url = url
+						rehttpsTask = rehttpsSession?.requestData(nreq, { (d, r, e) in
+							if !self.isCancelled { self.completion(d, r, e) }
+							self.done()
+						})
+						return
 					}
 				}
 				main()
@@ -214,55 +212,55 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 			response = r
 
 			if (response.allHeaderFields["Transfer-Encoding"] as? String) == "chunked" {
-				socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+				socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
 				chunkData = NSMutableData()
-				sequence = .ChunkedLength
+				sequence = .chunkedLength
 				return
 			}
 
-			guard let lenstr = response.allHeaderFields["Content-Length"] as? String, len = UInt(lenstr) else {
+			guard let lenstr = response.allHeaderFields["Content-Length"] as? String, let len = UInt(lenstr) else {
 				compError(4, msg: "http no-length")
 				return
 			}
 
-			socket?.readDataToLength(len, withTimeout: request.timeoutInterval, tag: 0)
-			sequence = .Body
+			socket?.readData(toLength: len, withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .body
 
-		case .Body:
+		case .body:
 			completion(data, response, nil)
 			done()
 
-		case .ChunkedLength:
-			let scanner = NSScanner(string: String(data: data, encoding: NSUTF8StringEncoding) ?? "")
+		case .chunkedLength:
+			let scanner = Scanner(string: String(data: data, encoding: String.Encoding.utf8) ?? "")
 			var hexValue: UInt32 = 0
-			if scanner.scanHexInt(&hexValue) == false {
+			if scanner.scanHexInt32(&hexValue) == false {
 				compError(5, msg: "http illegal chunk len")
 				return
 			}
 			if hexValue == 0 {
-				completion(chunkData, response, nil)
+				completion(chunkData as Data?, response, nil)
 				done()
 				return
 			}
-			socket?.readDataToLength(UInt(hexValue), withTimeout: request.timeoutInterval, tag: 0)
-			sequence = .ChunkedBody
+			socket?.readData(toLength: UInt(hexValue), withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .chunkedBody
 
-		case .ChunkedBody:
-			chunkData?.appendData(data)
-			socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
-			sequence = .ChunkBodyTail
+		case .chunkedBody:
+			chunkData?.append(data)
+			socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .chunkBodyTail
 
-		case .ChunkBodyTail:
-			socket?.readDataToData(CRLFData, withTimeout: request.timeoutInterval, tag: 0)
-			sequence = .ChunkedLength
+		case .chunkBodyTail:
+			socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			sequence = .chunkedLength
 		}
 	}
 
-	func makeResponse(data: NSData) -> NSHTTPURLResponse? {
-		guard let hs = String(data: data, encoding: NSUTF8StringEncoding) else { return nil }
-		var headlines = hs.componentsSeparatedByString("\r\n")
+	func makeResponse(_ data: Data) -> HTTPURLResponse? {
+		guard let hs = String(data: data, encoding: String.Encoding.utf8) else { return nil }
+		var headlines = hs.components(separatedBy: "\r\n")
 
-		let st = headlines[0].componentsSeparatedByString(" ")
+		let st = headlines[0].components(separatedBy: " ")
 		if st.count <= 2 { return nil }
 		guard let status = Int(st[1]) else { return nil }
 
@@ -270,20 +268,20 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 		var headers: [String: String] = [:]
 
 		for h in headlines {
-			guard let ra = h.rangeOfString(":") else { continue }
+			guard let ra = h.range(of: ":") else { continue }
 
-			let k = h.substringToIndex(ra.startIndex).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-			let v = h.substringFromIndex(ra.endIndex).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+			let k = h.substring(to: ra.lowerBound).trimmingCharacters(in: CharacterSet.whitespaces)
+			let v = h.substring(from: ra.upperBound).trimmingCharacters(in: CharacterSet.whitespaces)
 
 			if k == "Set-Cookie" {
-				let cookies = NSHTTPCookie.cookiesWithResponseHeaderFields([k: v], forURL: url)
-				NSHTTPCookieStorage.sharedHTTPCookieStorage().setCookies(cookies, forURL: url, mainDocumentURL: url)
+				let cookies = HTTPCookie.cookies(withResponseHeaderFields: [k: v], for: url)
+				HTTPCookieStorage.shared.setCookies(cookies, for: url, mainDocumentURL: url)
 				continue
 			}
 			headers[k] = v
 		}
 
-		return NSHTTPURLResponse(URL: url, statusCode: status, HTTPVersion: st[0], headerFields: headers)
+		return HTTPURLResponse(url: url, statusCode: status, httpVersion: st[0], headerFields: headers)
 	}
 
 	func closeSocket() {
@@ -293,16 +291,16 @@ class SockHTTPOperation: NSOperation, GCDAsyncSocketDelegate {
 	}
 
 	func done() {
-		executing = false
-		finished = true
+		isExecuting = false
+		isFinished = true
 	}
 
-	func compError(error: NSError) {
+	func compError(_ error: NSError) {
 		completion(nil, nil, error)
 		done()
 	}
 
-	func compError(code: Int, msg: String) {
+	func compError(_ code: Int, msg: String) {
 		let error = NSError(domain: "http", code: code, userInfo: [NSLocalizedDescriptionKey: msg])
 		compError(error)
 	}
