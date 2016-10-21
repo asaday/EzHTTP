@@ -140,7 +140,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 	func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
 
 		var headlines: [String] = []
-		var path = url.path 
+		var path = url.path
 		if let q = url.query { path += "?" + q }
 		headlines.append("\(request.httpMethod!) \(path) HTTP/1.1")
 		headlines.append("Host: \(url.host ?? "")")
@@ -201,7 +201,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 						rehttpsTask = rehttpsSession?.requestData(nreq, { (d, r, e) in
 							if !self.isCancelled { self.completion(d, r, e) }
 							self.done()
-						})
+						                                          })
 						return
 					}
 				}
