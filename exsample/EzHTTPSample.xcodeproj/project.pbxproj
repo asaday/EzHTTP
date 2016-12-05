@@ -203,6 +203,7 @@
 					};
 					C3D225D41D28AAAC00A0F339 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 5E2LE3SXM6;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -512,6 +513,7 @@
 			baseConfigurationReference = B3AA4702BEE22552A7BBAB84 /* Pods-EzHTTPSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 5E2LE3SXM6;
 				INFOPLIST_FILE = EzHTTPSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTPSample;
@@ -524,6 +526,7 @@
 			baseConfigurationReference = 83EC2942D22942C8183D7C84 /* Pods-EzHTTPSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 5E2LE3SXM6;
 				INFOPLIST_FILE = EzHTTPSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTPSample;

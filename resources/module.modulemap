@@ -1,9 +1,0 @@
-
-framework module EzHTTP {
-    header "EzHTTP.h"
-    export *
-
-    module GCDAsyncSocket {
-        header "GCDAsyncSocket.h"
-    }
-}

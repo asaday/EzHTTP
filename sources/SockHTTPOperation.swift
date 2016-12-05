@@ -3,6 +3,7 @@
 // The MIT License (MIT)
 
 import Foundation
+import CocoaAsyncSocket
 
 class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 

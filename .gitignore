@@ -52,6 +52,7 @@ example/Pods/
 # Carthage/Checkouts
 
 Carthage/Build
+Carthage/Checkouts
 
 # fastlane
 #

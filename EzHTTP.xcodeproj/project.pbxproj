@@ -8,8 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C35DDEF01D57890E003932EE /* EzHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = C35DDEEF1D57890E003932EE /* EzHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C36B4E181D45203700FC8D0B /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */; };
+		C35E793B1DF508D50060CA99 /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */; };
 		C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1A1D45204700FC8D0B /* Indicator.swift */; };
 		C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */; };
 		C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* EzHTTP.swift */; };
@@ -17,13 +16,9 @@
 
 /* Begin PBXFileReference section */
 		C35DDEEF1D57890E003932EE /* EzHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EzHTTP.h; sourceTree = "<group>"; };
-		C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
-		C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaAsyncSocket.framework; path = Carthage/Build/iOS/CocoaAsyncSocket.framework; sourceTree = "<group>"; };
 		C36B4E1A1D45204700FC8D0B /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
 		C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SockHTTPOperation.swift; sourceTree = "<group>"; };
-		C3792E801D4CD1E400B08DEA /* EzHTTPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPTests.swift; sourceTree = "<group>"; };
-		C3792E821D4CD1E400B08DEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C3A9DDD91D578F33005DFAE8 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D225C61D28AA5200A0F339 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3D225C81D28AA5200A0F339 /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
@@ -34,27 +29,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C35E793B1DF508D50060CA99 /* CocoaAsyncSocket.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C3792E7F1D4CD1E400B08DEA /* EzHTTPTests */ = {
-			isa = PBXGroup;
-			children = (
-				C3792E801D4CD1E400B08DEA /* EzHTTPTests.swift */,
-				C3792E821D4CD1E400B08DEA /* Info.plist */,
-			);
-			path = EzHTTPTests;
-			sourceTree = "<group>";
-		};
 		C3D225AF1D28AA0900A0F339 = {
 			isa = PBXGroup;
 			children = (
+				C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */,
 				C3D225C41D28AA5200A0F339 /* resources */,
 				C3D225C71D28AA5200A0F339 /* sources */,
-				C3792E7F1D4CD1E400B08DEA /* EzHTTPTests */,
 				C3D225BA1D28AA0900A0F339 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,7 +57,6 @@
 		C3D225C41D28AA5200A0F339 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				C3A9DDD91D578F33005DFAE8 /* module.modulemap */,
 				C3D225C61D28AA5200A0F339 /* Info.plist */,
 			);
 			path = resources;
@@ -80,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				C35DDEEF1D57890E003932EE /* EzHTTP.h */,
-				C36B4E161D45203700FC8D0B /* GCDAsyncSocket.h */,
-				C36B4E171D45203700FC8D0B /* GCDAsyncSocket.m */,
 				C3D225C81D28AA5200A0F339 /* EzHTTP.swift */,
 				C36B4E1A1D45204700FC8D0B /* Indicator.swift */,
 				C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */,
@@ -97,7 +81,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C35DDEF01D57890E003932EE /* EzHTTP.h in Headers */,
-				C36B4E181D45203700FC8D0B /* GCDAsyncSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,7 +153,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C36B4E191D45203700FC8D0B /* GCDAsyncSocket.m in Sources */,
 				C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */,
 				C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */,
 				C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */,
@@ -287,11 +269,14 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = resources/module.modulemap;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -309,11 +294,14 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = resources/module.modulemap;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

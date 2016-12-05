@@ -4,11 +4,6 @@
 
 import Foundation
 
-public extension URLRequest {
-	init(string str: String) {
-		self.init(url: URL(string: str)!)
-	}
-}
 
 // MARK: - NSURLSession
 
@@ -98,6 +93,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		// config.HTTPMaximumConnectionsPerHost = 6
 		// config.timeoutIntervalForRequest = 15
 		// logHandler = HTTP.defaultLogHandler
+		NetworkIndicator.setState("", false) // to skip lazy load
 	}
 
 	deinit {
