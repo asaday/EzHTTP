@@ -214,18 +214,10 @@ open class HTTP: NSObject, URLSessionDelegate {
 	}
 
 // url is String or URL
-	open func createRequest(_ method: Method, _ url: Any, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+	open func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
 		var ourl: URL? = nil
 
-		switch url {
-		case is String: if let urlstring = url as? String { ourl = URL(string: urlstring, relativeTo: baseURL) }
-		case is URL: ourl = url as? URL
-		default: break
-		}
-
-		guard let gurl = ourl else { return nil }
-
-		var req = URLRequest(url: gurl)
+		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
@@ -236,7 +228,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		var queryParams = params?[ParamMode.query.rawValue] as? [String: Any]
 		if !postmode && queryParams == nil { queryParams = params }
 
-		if let p = queryParams, var uc = URLComponents(url: gurl, resolvingAgainstBaseURL: false) {
+		if let p = queryParams, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 			var q = encodeQuery(p)
 			if let oq = uc.percentEncodedQuery { q = oq + "&" }
 			if !q.isEmpty {
@@ -290,7 +282,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return req
 	}
 
-	open func request(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
+	open func request(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
 
 		guard let req = createRequest(method, url, params: params, headers: headers) else {
 			handler(Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
@@ -299,6 +291,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return request(req as URLRequest, handler: handler)
 	}
 
+	open func createURL(_ url:String)->URL? {
+		return URL(string: url, relativeTo: baseURL)
+	}
 }
 
 // for debbug
@@ -312,7 +307,7 @@ extension HTTP {
 // MARK: static
 
 public extension HTTP {
-	static func createRequest(_ method: Method, _ url: Any, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+	static func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
 		return shared.createRequest(method, url, params: params, headers: headers)
 	}
 
@@ -320,12 +315,22 @@ public extension HTTP {
 		return shared.request(request, handler: handler)
 	}
 
-	@discardableResult static func request(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+	@discardableResult static func request(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(method, url, params: params, headers: headers, handler: handler)
 	}
 
-	@discardableResult static func get(_ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
-		return shared.request(.GET, url, params: params, headers: headers, handler: handler)
+	@discardableResult static func request(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+		guard let url = shared.createURL(urlstring) else { return nil }
+		return request(method, url, params: params, headers: headers, handler)
+	}
+
+	@discardableResult static func get(_ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+		return request(.GET, url, params: params, headers: headers, handler)
+	}
+	
+	@discardableResult static func get(_ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+		guard let url = shared.createURL(urlstring) else { return nil }
+		return get(url, params: params, headers: headers, handler)
 	}
 
 	// async
@@ -338,17 +343,28 @@ public extension HTTP {
 		return r
 	}
 
-	static func requestASync(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+	static func requestASync(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
 		guard let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
 			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
 		}
 		return requestASync(req as URLRequest)
 	}
+	
+	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+		guard let url = shared.createURL(urlstring) , let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
+			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
+		}
+		return requestASync(req as URLRequest)
+	}
 
-	static func getASync(_ url: Any, headers: [String: String]? = nil) -> Response {
+	static func getASync(_ url: URL, headers: [String: String]? = nil) -> Response {
 		return requestASync(.GET, url, params: nil, headers: headers)
 	}
 
+	static func getASync(_ urlstring: String, headers: [String: String]? = nil) -> Response {
+		return requestASync(.GET, urlstring, params: nil, headers: headers)
+	}
+	
 	// param for multi pattern
 	static func makeParams(query: [String: Any]? = nil, form: [String: Any]? = nil, json: [String: Any]? = nil) -> [String: Any] {
 

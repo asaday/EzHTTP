@@ -45,6 +45,18 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectations(timeout: 5, handler: nil)
 	}
 
+	func testGetURL() {
+		let expectation = self.expectation(description: "")
+		
+		let url = URL(string: host + "/get?a=b")!
+		HTTP.get(url) { (res) in
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 5, handler: nil)
+	}
+
 	func testGetParam() {
 		let expectation = self.expectation(description: "")
 
