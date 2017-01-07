@@ -22,7 +22,7 @@ open class NetworkIndicator: NSObject {
 		queue.addObserver(sharedManager, forKeyPath: "operationCount", options: .new, context: nil)
 		sharedManager.queues.append(queue)
 	}
-	
+
 	open static func removeOberveQueue(_ queue: OperationQueue?) {
 		guard let queue = queue else { return }
 		queue.removeObserver(sharedManager, forKeyPath: "operationCount")

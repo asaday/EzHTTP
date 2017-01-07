@@ -13,7 +13,6 @@ public extension URLSession {
 		let task = dataTask(with: request) { (d, r, e) in
 			completionHandler(d, r as? HTTPURLResponse, e as? NSError)
 		}
-
 		task.resume()
 		return task
 	}
@@ -75,6 +74,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 			httpOperation = nil
 		}
 	}
+
 	open class MultipartFile: NSObject {
 		open var mime: String
 		open var filename: String
@@ -110,12 +110,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 			handler(result)
 		}
 
-		if let stub = stubHandler {
-			let r = stub(request)
-			if let r = r {
-				handlecall(r)
-				return nil
-			}
+		if let stub = stubHandler, let r = stub(request) {
+			handlecall(r)
+			return nil
 		}
 
 		if session == nil {
@@ -170,16 +167,11 @@ open class HTTP: NSObject, URLSessionDelegate {
 			var r: [String] = []
 
 			switch value {
-			case let dic as [String: Any]:
-				for (k, v) in dic { r += encode("\(key)[\(k)]", v) }
-			case let ar as [Any]:
-				for v in ar { r += encode("\(key)[]", v) }
-			case let s as String:
-				r.append(escape(key) + "=" + escape(s))
-			case let d as Data:
-				r.append(escape(key) + "=" + d.base64EncodedString(options: []))
-			default:
-				r.append(escape(key) + "=" + escape("\(value)"))
+			case let dic as [String: Any]: for (k, v) in dic { r += encode("\(key)[\(k)]", v) }
+			case let ar as [Any]: for v in ar { r += encode("\(key)[]", v) }
+			case let s as String: r.append(escape(key) + "=" + escape(s))
+			case let d as Data: r.append(escape(key) + "=" + d.base64EncodedString(options: []))
+			default: r.append(escape(key) + "=" + escape("\(value)"))
 			}
 			return r
 		}
@@ -221,10 +213,19 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return r as Data
 	}
 
-	open func createRequest(_ method: Method, _ urls: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
-		guard let url = URL(string: urls, relativeTo: baseURL) else { return nil }
+// url is String or URL
+	open func createRequest(_ method: Method, _ url: Any, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+		var ourl: URL? = nil
 
-		var req = URLRequest(url: url)
+		switch url {
+		case is String: if let urlstring = url as? String { ourl = URL(string: urlstring, relativeTo: baseURL) }
+		case is URL: ourl = url as? URL
+		default: break
+		}
+
+		guard let gurl = ourl else { return nil }
+
+		var req = URLRequest(url: gurl)
 		req.httpMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
@@ -235,14 +236,13 @@ open class HTTP: NSObject, URLSessionDelegate {
 		var queryParams = params?[ParamMode.query.rawValue] as? [String: Any]
 		if !postmode && queryParams == nil { queryParams = params }
 
-		if let p = queryParams, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+		if let p = queryParams, var uc = URLComponents(url: gurl, resolvingAgainstBaseURL: false) {
 			var q = encodeQuery(p)
 			if let oq = uc.percentEncodedQuery { q = oq + "&" }
 			if !q.isEmpty {
 				uc.percentEncodedQuery = q
 				if let uu = uc.url { req.url = uu }
 			}
-
 		}
 
 		if !postmode { return req }
@@ -290,9 +290,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return req
 	}
 
-	open func request(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
+	open func request(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, handler: @escaping ResponseHandler) -> Task? {
 
-		guard let req = createRequest(method, urls, params: params, headers: headers) else {
+		guard let req = createRequest(method, url, params: params, headers: headers) else {
 			handler(Response(error: NSError(domain: "http", code: -1, userInfo: [NSLocalizedDescriptionKey: "URL making error"])))
 			return nil
 		}
@@ -312,20 +312,20 @@ extension HTTP {
 // MARK: static
 
 public extension HTTP {
-	static func createRequest(_ method: Method, _ urls: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
-		return shared.createRequest(method, urls, params: params, headers: headers)
+	static func createRequest(_ method: Method, _ url: Any, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+		return shared.createRequest(method, url, params: params, headers: headers)
 	}
 
 	@discardableResult static func request(_ request: URLRequest, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(request, handler: handler)
 	}
 
-	@discardableResult static func request(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
-		return shared.request(method, urls, params: params, headers: headers, handler: handler)
+	@discardableResult static func request(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+		return shared.request(method, url, params: params, headers: headers, handler: handler)
 	}
 
-	@discardableResult static func get(_ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
-		return shared.request(.GET, urls, params: params, headers: headers, handler: handler)
+	@discardableResult static func get(_ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
+		return shared.request(.GET, url, params: params, headers: headers, handler: handler)
 	}
 
 	// async
@@ -338,15 +338,15 @@ public extension HTTP {
 		return r
 	}
 
-	static func requestASync(_ method: Method, _ urls: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
-		guard let req = HTTP.createRequest(method, urls, params: params, headers: headers) else {
+	static func requestASync(_ method: Method, _ url: Any, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+		guard let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
 			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
 		}
 		return requestASync(req as URLRequest)
 	}
 
-	static func getASync(_ urls: String, headers: [String: String]? = nil) -> Response {
-		return requestASync(.GET, urls, params: nil, headers: headers)
+	static func getASync(_ url: Any, headers: [String: String]? = nil) -> Response {
+		return requestASync(.GET, url, params: nil, headers: headers)
 	}
 
 	// param for multi pattern
@@ -358,22 +358,21 @@ public extension HTTP {
 		if let v = json { r[ParamMode.json.rawValue] = v }
 		return r
 	}
-
 }
 
 // MARK: response
 public extension HTTP {
 	typealias ResponseHandler = ((_ result: Response) -> Void)
 
-	class Response: CustomStringConvertible {
+	struct Response: CustomStringConvertible {
 
-		open let data: Data?
-		open let error: NSError?
-		open let response: HTTPURLResponse?
-		open let request: URLRequest?
-		open let duration: TimeInterval?
+		public let data: Data?
+		public let error: NSError?
+		public let response: HTTPURLResponse?
+		public let request: URLRequest?
+		public let duration: TimeInterval
 
-		public init(data: Data?, error: NSError?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval?) {
+		public init(data: Data?, error: NSError?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval) {
 			self.data = data
 			self.error = error
 			self.response = response
@@ -381,28 +380,28 @@ public extension HTTP {
 			self.duration = duration
 		}
 
-		public convenience init(error: NSError) {
+		public init(error: NSError) {
 			self.init(data: nil, error: error, response: nil, request: nil, duration: 0)
 		}
 
-		open var string: String? {
+		public var string: String? {
 			guard let d = data else { return nil }
 			return String(data: d, encoding: String.Encoding.utf8)
 		}
 
-		open var jsonObject: NSObject? {
+		public var jsonObject: NSObject? {
 			guard let dat = data else { return nil }
 			guard let json = try? JSONSerialization.jsonObject(with: dat, options: .allowFragments) else { return nil }
 			return json as? NSObject
 		}
 
-		open var status: Int { return response?.statusCode ?? 0 }
-		open var dataValue: Data { return data ?? Data() }
-		open var stringValue: String { return string ?? "" }
-		open var jsonObjectValue: NSObject { return jsonObject ?? NSObject() }
-		open var headers: [AnyHashable: String] { return response?.allHeaderFields as? [AnyHashable: String] ?? [:] }
+		public var status: Int { return response?.statusCode ?? 0 }
+		public var dataValue: Data { return data ?? Data() }
+		public var stringValue: String { return string ?? "" }
+		public var jsonObjectValue: NSObject { return jsonObject ?? NSObject() }
+		public var headers: [AnyHashable: String] { return response?.allHeaderFields as? [AnyHashable: String] ?? [:] }
 
-		open var description: String {
+		public var description: String {
 			var result = "[Res] "
 			result += request?.url?.absoluteString ?? "unknownURL"
 			result += " (\( Int((duration ?? 0) * 1000))ms)\n"

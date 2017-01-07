@@ -1,0 +1,21 @@
+PODS:
+  - CocoaAsyncSocket (7.5.1):
+    - CocoaAsyncSocket/GCD (= 7.5.1)
+  - CocoaAsyncSocket/GCD (7.5.1)
+  - EzHTTP (3.0.11):
+    - CocoaAsyncSocket
+
+DEPENDENCIES:
+  - EzHTTP (from `../`)
+
+EXTERNAL SOURCES:
+  EzHTTP:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: e0a7e93b2ffa411592ff87e58524fbbc9b95b4fa
+  EzHTTP: 1de718b0ca49c8e793236f00fa0b97cd9cd3fec8
+
+PODFILE CHECKSUM: cd2f40b5c2733d7790a0dcf3dd029530e31eedfd
+
+COCOAPODS: 1.1.1
