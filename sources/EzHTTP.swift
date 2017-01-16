@@ -215,7 +215,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 // url is String or URL
 	open func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
-		var ourl: URL? = nil
 
 		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
@@ -420,7 +419,7 @@ public extension HTTP {
 		public var description: String {
 			var result = "[Res] "
 			result += request?.url?.absoluteString ?? "unknownURL"
-			result += " (\( Int((duration ?? 0) * 1000))ms)\n"
+			result += " (\( Int((duration) * 1000))ms)\n"
 
 			if let e = error { result += "Error:" + e.localizedDescription }
 
