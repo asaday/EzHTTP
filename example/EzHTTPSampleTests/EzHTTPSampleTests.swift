@@ -7,7 +7,7 @@ import EzHTTP
 
 class EzHTTPSampleTests: XCTestCase {
 
-	var host = "http://httpbin.org" // or https
+	var host = "https://httpbin.org" // or https
 
 	func findJSONString(_ json: NSObject?, path: String) -> String {
 		guard let json = json else { return "" }
@@ -132,6 +132,20 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectations(timeout: 5, handler: nil)
 	}
 
+	func testPostJSON() {
+		let expectation = self.expectation(description: "")
+		HTTP.request(.POST, host + "/post", params: [HTTP.ParamMode.json.rawValue:["a": "b"]]) { (res) in
+			print(res.stringValue)
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "json/a"), "b")
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 5, handler: nil)
+	}
+
+	// need json post check
+	//curl -X POST -H "Content-type: application/json" -d '{"k":"v"}' https://httpbin.org/post
+	
 	func testPostMQ() {
 		let expectation = self.expectation(description: "")
 		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in

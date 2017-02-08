@@ -242,17 +242,17 @@ open class HTTP: NSObject, URLSessionDelegate {
 		var mode = ParamMode.form
 		if postASJSON { mode = .json }
 
-		if let r = params?[ParamMode.json.rawValue] as? [String: AnyObject] {
+		if let r = params?[ParamMode.json.rawValue] as? [String: Any] {
 			sp = r
 			mode = .json
 		}
 
-		if let r = params?[ParamMode.form.rawValue] as? [String: AnyObject] {
+		if let r = params?[ParamMode.form.rawValue] as? [String: Any] {
 			sp = r
 			mode = .form
 		}
 
-		if let r = params?[ParamMode.multipartForm.rawValue] as? [String: AnyObject] {
+		if let r = params?[ParamMode.multipartForm.rawValue] as? [String: Any] {
 			sp = r
 			mode = .multipartForm
 		}
@@ -262,7 +262,8 @@ open class HTTP: NSObject, URLSessionDelegate {
 		guard let p = sp else { return req }
 		switch mode {
 		case .json:
-			req.httpBody = try? JSONSerialization.data(withJSONObject: p, options: [])
+			if JSONSerialization.isValidJSONObject(p) { req.httpBody = try? JSONSerialization.data(withJSONObject: p, options: []) }
+			if req.httpBody == nil { req.httpBody = "{}".data(using: .utf8) } // no-data value
 			req.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
 		case .form:
