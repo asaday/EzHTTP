@@ -47,7 +47,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testGetURL() {
 		let expectation = self.expectation(description: "")
-		
+
 		let url = URL(string: host + "/get?a=b")!
 		HTTP.get(url) { (res) in
 			XCTAssertNil(res.error)
@@ -68,6 +68,19 @@ class EzHTTPSampleTests: XCTestCase {
 		}
 		waitForExpectations(timeout: 5, handler: nil)
 	}
+
+	func testGetinpath() {
+		let expectation = self.expectation(description: "")
+
+		HTTP.get(host + "/{zzz}", params: [HTTP.ParamMode.query.rawValue: ["a": "b"], HTTP.ParamMode.path.rawValue: ["zzz": "get"]]) { (res) in
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 5, handler: nil)
+	}
+
+
 
 	func testGetRedirect() {
 		let expectation = self.expectation(description: "")
@@ -134,7 +147,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testPostJSON() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: [HTTP.ParamMode.json.rawValue:["a": "b"]]) { (res) in
+		HTTP.request(.POST, host + "/post", params: [HTTP.ParamMode.json.rawValue: ["a": "b"]]) { (res) in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "json/a"), "b")
@@ -145,7 +158,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	// need json post check
 	//curl -X POST -H "Content-type: application/json" -d '{"k":"v"}' https://httpbin.org/post
-	
+
 	func testPostMQ() {
 		let expectation = self.expectation(description: "")
 		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in

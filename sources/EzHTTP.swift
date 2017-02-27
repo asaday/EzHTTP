@@ -86,7 +86,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		}
 	}
 
-	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm" }
+	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm", path = "???path", header = "???header" }
 
 	override init () {
 		super.init()
@@ -213,21 +213,29 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return r as Data
 	}
 
-// url is String or URL
+	// url is String or URL
 	open func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
 
 		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
-		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
+
 		// config header is auto merged
+		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
+		if let r = params?[ParamMode.header.rawValue] as? [String: String] {
+			r.forEach { req.setValue($1, forHTTPHeaderField: $0) }
+		}
+
+		var sp = params
+		sp?[HTTP.ParamMode.header.rawValue] = nil
+		sp?[HTTP.ParamMode.path.rawValue] = nil
 
 		let postmode = (method == .POST || method == .PUT || method == .PATCH)
 
-		var queryParams = params?[ParamMode.query.rawValue] as? [String: Any]
-		if !postmode && queryParams == nil { queryParams = params }
+		var queries = sp?[ParamMode.query.rawValue] as? [String: Any]
+		if !postmode && queries == nil { queries = sp }
 
-		if let p = queryParams, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+		if let p = queries, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 			var q = encodeQuery(p)
 			if let oq = uc.percentEncodedQuery { q = oq + "&" }
 			if !q.isEmpty {
@@ -238,21 +246,20 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		if !postmode { return req }
 
-		var sp = params
 		var mode = ParamMode.form
 		if postASJSON { mode = .json }
 
-		if let r = params?[ParamMode.json.rawValue] as? [String: Any] {
+		if let r = sp?[ParamMode.json.rawValue] as? [String: Any] {
 			sp = r
 			mode = .json
 		}
 
-		if let r = params?[ParamMode.form.rawValue] as? [String: Any] {
+		if let r = sp?[ParamMode.form.rawValue] as? [String: Any] {
 			sp = r
 			mode = .form
 		}
 
-		if let r = params?[ParamMode.multipartForm.rawValue] as? [String: Any] {
+		if let r = sp?[ParamMode.multipartForm.rawValue] as? [String: Any] {
 			sp = r
 			mode = .multipartForm
 		}
@@ -282,8 +289,15 @@ open class HTTP: NSObject, URLSessionDelegate {
 		return req
 	}
 
-	open func createURL(_ url: String) -> URL? {
-		return URL(string: url, relativeTo: baseURL)
+	open func createURL(_ url: String, inpath: [String: String]? = nil) -> URL? {
+		if inpath == nil { return URL(string: url, relativeTo: baseURL) }
+
+		let ms: NSMutableString = NSMutableString(string: url)
+		inpath?.forEach { k, v in
+			ms.replaceOccurrences(of: "{\(k)}", with: v, options: .caseInsensitive, range: NSMakeRange(0, ms.length))
+		}
+
+		return URL(string: ms as String, relativeTo: baseURL)
 	}
 }
 
@@ -303,7 +317,7 @@ public extension HTTP {
 	}
 
 	static func createRequest(_ method: Method, _ urlstring: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
-		guard let url = shared.createURL(urlstring) else { return nil }
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return nil }
 		return createRequest(method, url, params: params, headers: headers)
 	}
 
@@ -317,7 +331,7 @@ public extension HTTP {
 	}
 
 	@discardableResult static func request(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
-		guard let url = shared.createURL(urlstring) else { return nil }
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return nil }
 		return request(method, url, params: params, headers: headers, handler)
 	}
 
@@ -326,7 +340,7 @@ public extension HTTP {
 	}
 
 	@discardableResult static func get(_ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
-		guard let url = shared.createURL(urlstring) else { return nil }
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return nil }
 		return get(url, params: params, headers: headers, handler)
 	}
 
@@ -348,9 +362,10 @@ public extension HTTP {
 	}
 
 	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
-		guard let url = shared.createURL(urlstring), let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
-			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
-		}
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]),
+			let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
+				return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
+			}
 		return requestASync(req as URLRequest)
 	}
 

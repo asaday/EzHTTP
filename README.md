@@ -120,7 +120,7 @@ Create a request
 
 #### params
 
-- normal
+##### normal
 
 method | in param
 ---|---
@@ -134,12 +134,34 @@ to use file, add in params HTTP.MultipartFile, auto changed to multipart/form-da
 
 in json mode, data is auto convered to base64
 
-- on demand change request params mode
+##### on demand change request params mode
 
 use HTTP.makeParams() or
 
-	params = [ParamMode.Query.rawValue: ["foo":bar"],
-			ParamMode.Form.rawValue: ["aaa":"bbb"]]
+	params = [HTTP.ParamMode.query.rawValue: ["foo":bar"],
+			HTTP.ParamMode.form.rawValue: ["aaa":"bbb"]]
+
+
+- ParamMode
+
+key|description
+---|---
+query| in query ?aaa=bbb
+form| as application/x-www-form-urlencoded
+json| as application/json
+multipartForm| as multipart/form-data; boundary=...
+path| in path https://example.com/{user}
+header| in header
+
+
+- path example
+
+URLstring = "https://example.com/{user}"  
+param = [HTTP.ParamMode.path.rawValue: ["user": "123"]]
+
+make URL as
+
+"https://example.com/123"
 
 
 ### Log,Stub
