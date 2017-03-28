@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "EzHTTP"
-s.version      = "3.0.15"
+s.version      = "3.1.0"
 s.summary      = "Easy HTTP access library"
 
 s.homepage     = "http://nagisaworks.com"
@@ -15,7 +15,5 @@ s.source_files  = "sources/**/*.{swift,h}"
 s.requires_arc = true
 
 s.dependency  'CocoaAsyncSocket'
-
-s.pod_target_xcconfig =  { 'SWIFT_VERSION' => '3.0' }
 
 end
