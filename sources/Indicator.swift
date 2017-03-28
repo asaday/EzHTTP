@@ -10,7 +10,7 @@ open class NetworkIndicator: NSObject {
 	static let sharedManager = NetworkIndicator()
 	var states: [String: Bool] = [:]
 	var queues: [OperationQueue] = []
-	var indicatorTimer: Timer? = nil
+	var indicatorTimer: Timer?
 	var visible: Bool = false
 
 	open static func setState(_ key: String, _ state: Bool) { sharedManager.setState(key, state: state) }
@@ -29,7 +29,7 @@ open class NetworkIndicator: NSObject {
 		if let idx = sharedManager.queues.index(of: queue) { sharedManager.queues.remove(at: idx) }
 	}
 
-	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+	open override func observeValue(forKeyPath keyPath: String?, of _: Any?, change _: [NSKeyValueChangeKey: Any]?, context _: UnsafeMutableRawPointer?) {
 		if keyPath != "operationCount" { return }
 		startIndicator()
 	}

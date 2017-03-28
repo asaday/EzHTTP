@@ -21,8 +21,8 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 	enum Sequence: Int { case header, body, chunkedLength, chunkedBody, chunkBodyTail }
 	var sequence: Sequence = .header
 	var chunkData: NSMutableData?
-	let CRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0d, 0x0a])), count: 2)
-	let CRLFCRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0d, 0x0a, 0x0d, 0x0a])), count: 4)
+	let CRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0D, 0x0A])), count: 2)
+	let CRLFCRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0D, 0x0A, 0x0D, 0x0A])), count: 4)
 
 	class func isATSBlocked(_ url: URL?) -> Bool {
 		guard let url = url else { return false }
@@ -114,10 +114,9 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 			compError(e)
 			return
 		}
-
 	}
 
-	func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
+	func socketDidDisconnect(_: GCDAsyncSocket, withError err: Error?) {
 		if !isExecuting { return }
 
 		if let e = err {
@@ -128,17 +127,17 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		done()
 	}
 
-	func socket(_ sock: GCDAsyncSocket, shouldTimeoutReadWithTag tag: Int, elapsed: TimeInterval, bytesDone length: UInt) -> TimeInterval {
+	func socket(_: GCDAsyncSocket, shouldTimeoutReadWithTag _: Int, elapsed _: TimeInterval, bytesDone _: UInt) -> TimeInterval {
 		compError(8, msg: "timeout r")
 		return -1
 	}
 
-	func socket(_ sock: GCDAsyncSocket, shouldTimeoutWriteWithTag tag: Int, elapsed: TimeInterval, bytesDone length: UInt) -> TimeInterval {
+	func socket(_: GCDAsyncSocket, shouldTimeoutWriteWithTag _: Int, elapsed _: TimeInterval, bytesDone _: UInt) -> TimeInterval {
 		compError(8, msg: "timeout w")
 		return -1
 	}
 
-	func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+	func socket(_: GCDAsyncSocket, didConnectToHost _: String, port _: UInt16) {
 
 		var headlines: [String] = []
 		var path = url.path
@@ -174,7 +173,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		socket?.readData(to: CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
 	}
 
-	func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
+	func socket(_: GCDAsyncSocket, didRead data: Data, withTag _: Int) {
 		if isCancelled {
 			done()
 			return
@@ -199,10 +198,10 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 					if url.scheme == "https" {
 						var nreq = request
 						nreq.url = url
-						rehttpsTask = rehttpsSession?.requestData(nreq, { (d, r, e) in
+						rehttpsTask = rehttpsSession?.requestData(nreq, { d, r, e in
 							if !self.isCancelled { self.completion(d, r, e) }
 							self.done()
-						                                          })
+						})
 						return
 					}
 				}
@@ -305,5 +304,4 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		let error = NSError(domain: "http", code: code, userInfo: [NSLocalizedDescriptionKey: msg])
 		compError(error)
 	}
-
 }

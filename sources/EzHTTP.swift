@@ -4,13 +4,12 @@
 
 import Foundation
 
-
 // MARK: - NSURLSession
 
 public extension URLSession {
 
 	func requestData(_ request: URLRequest, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
-		let task = dataTask(with: request) { (d, r, e) in
+		let task = dataTask(with: request) { d, r, e in
 			completionHandler(d, r as? HTTPURLResponse, e as? NSError)
 		}
 		task.resume()
@@ -27,7 +26,7 @@ public extension URLSession {
 public extension URLSession {
 
 	func requestFile(_ request: URLRequest, _ completionHandler: @escaping (URL?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDownloadTask {
-		let task = downloadTask(with: request) { (u, r, e) in
+		let task = downloadTask(with: request) { u, r, e in
 			completionHandler(u, r as? HTTPURLResponse, e as? NSError)
 		}
 		task.resume()
@@ -49,7 +48,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
 	open let config = URLSessionConfiguration.default
-	open var baseURL: URL? = nil
+	open var baseURL: URL?
 	open var postASJSON: Bool = false
 
 	open var errorHandler: ResponseHandler?
@@ -88,7 +87,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm", path = "???path", header = "???header" }
 
-	override init () {
+	override init() {
 		super.init()
 		// config.HTTPMaximumConnectionsPerHost = 6
 		// config.timeoutIntervalForRequest = 15
@@ -105,7 +104,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		let handlecall: ((_ res: Response) -> Void) = { result in
 			if result.data == nil { self.errorHandler?(result) }
-				else { self.successHandler?(result) }
+			else { self.successHandler?(result) }
 			self.logHandler?(result)
 			handler(result)
 		}
@@ -126,7 +125,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		let startTime = Date()
 		let task = Task()
 
-		let comp: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { (data, response, error) in
+		let comp: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { data, response, error in
 			let duration = Date().timeIntervalSince(startTime)
 			let res = Response(data: data, error: error, response: response, request: request, duration: duration)
 			if isMain {
@@ -138,7 +137,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		if escapeATS && SockHTTPOperation.isATSBlocked(request.url) { // HTTP
 			if hqueue == nil {
-				let q = OperationQueue ()
+				let q = OperationQueue()
 				q.maxConcurrentOperationCount = 12
 				if useIndicator { NetworkIndicator.addOberveQueue(q) }
 				hqueue = q
@@ -364,8 +363,8 @@ public extension HTTP {
 	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
 		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]),
 			let req = HTTP.createRequest(method, url, params: params, headers: headers) else {
-				return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
-			}
+			return Response(error: NSError(domain: "http", code: -2, userInfo: nil))
+		}
 		return requestASync(req as URLRequest)
 	}
 
@@ -432,14 +431,14 @@ public extension HTTP {
 		public var description: String {
 			var result = "[Res] "
 			result += request?.url?.absoluteString ?? "unknownURL"
-			result += " (\( Int((duration) * 1000))ms)\n"
+			result += " (\(Int(duration * 1000))ms)\n"
 
 			if let e = error { result += "Error:" + e.localizedDescription }
 
 			if let d = data {
 				if let s = String(data: d, encoding: String.Encoding.utf8) {
 					if s.characters.count < 24 { result += s }
-						else { result += (s as NSString).substring(to: 24) + "...length: \(s.characters.count)" }
+					else { result += (s as NSString).substring(to: 24) + "...length: \(s.characters.count)" }
 				} else {
 					return "data length: \(d.count / 1024) KB"
 				}
@@ -449,6 +448,4 @@ public extension HTTP {
 			return result
 		}
 	}
-
 }
-

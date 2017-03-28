@@ -9,9 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	var window: UIWindow?
 
-	private func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: Any]?) -> Bool {
+	private func application(_: UIApplication, didFinishLaunchingWithOptions _: [NSObject: Any]?) -> Bool {
 		return true
 	}
-
 }
-

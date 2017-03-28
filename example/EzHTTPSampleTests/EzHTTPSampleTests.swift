@@ -30,14 +30,14 @@ class EzHTTPSampleTests: XCTestCase {
 		super.tearDown()
 	}
 
-//    func testPerformanceExample() {
-//        self.measureBlock { }
-//    }
+	//    func testPerformanceExample() {
+	//        self.measureBlock { }
+	//    }
 
 	func testGet() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/get?a=b") { (res) in
+		HTTP.get(host + "/get?a=b") { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
@@ -49,7 +49,7 @@ class EzHTTPSampleTests: XCTestCase {
 		let expectation = self.expectation(description: "")
 
 		let url = URL(string: host + "/get?a=b")!
-		HTTP.get(url) { (res) in
+		HTTP.get(url) { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
@@ -60,7 +60,7 @@ class EzHTTPSampleTests: XCTestCase {
 	func testGetParam() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/get", params: ["a": "b"], headers: ["Aaa": "bbb"]) { (res) in
+		HTTP.get(host + "/get", params: ["a": "b"], headers: ["Aaa": "bbb"]) { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "headers/Aaa"), "bbb")
@@ -72,7 +72,7 @@ class EzHTTPSampleTests: XCTestCase {
 	func testGetinpath() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/{zzz}", params: [HTTP.ParamMode.query.rawValue: ["a": "b"], HTTP.ParamMode.path.rawValue: ["zzz": "get"]]) { (res) in
+		HTTP.get(host + "/{zzz}", params: [HTTP.ParamMode.query.rawValue: ["a": "b"], HTTP.ParamMode.path.rawValue: ["zzz": "get"]]) { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
@@ -80,12 +80,10 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectations(timeout: 5, handler: nil)
 	}
 
-
-
 	func testGetRedirect() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/redirect/3") { (res) in
+		HTTP.get(host + "/redirect/3") { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "url"), self.host + "/get")
 			expectation.fulfill()
@@ -96,7 +94,7 @@ class EzHTTPSampleTests: XCTestCase {
 	func testGetPNG() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.get(host + "/image/png") { (res) in
+		HTTP.get(host + "/image/png") { res in
 			XCTAssertNil(res.error)
 			let img = UIImage(data: res.dataValue)
 			XCTAssertNotNil(img)
@@ -112,7 +110,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 		let cv = UUID().uuidString
 
-		HTTP.get(host + "/cookies/set?k2=v2&k1=\(cv)") { (res) in
+		HTTP.get(host + "/cookies/set?k2=v2&k1=\(cv)") { res in
 			print(res.stringValue)
 
 			HTTP.get(self.host + "/get") { res in
@@ -136,7 +134,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testPost() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: ["a": "b"]) { (res) in
+		HTTP.request(.POST, host + "/post", params: ["a": "b"]) { res in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
@@ -147,7 +145,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testPostJSON() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: [HTTP.ParamMode.json.rawValue: ["a": "b"]]) { (res) in
+		HTTP.request(.POST, host + "/post", params: [HTTP.ParamMode.json.rawValue: ["a": "b"]]) { res in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "json/a"), "b")
@@ -157,11 +155,11 @@ class EzHTTPSampleTests: XCTestCase {
 	}
 
 	// need json post check
-	//curl -X POST -H "Content-type: application/json" -d '{"k":"v"}' https://httpbin.org/post
+	// curl -X POST -H "Content-type: application/json" -d '{"k":"v"}' https://httpbin.org/post
 
 	func testPostMQ() {
 		let expectation = self.expectation(description: "")
-		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { (res) in
+		HTTP.request(.POST, host + "/post", params: HTTP.makeParams(query: ["q": "p"], form: ["a": "b"])) { res in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
@@ -176,7 +174,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 		let file = HTTP.MultipartFile(mime: "iage/png", filename: "name", data: "aaa".data(using: String.Encoding.utf8)!)
 
-		HTTP.request(.POST, host + "/post", params: ["a": "b", "c": file]) { (res) in
+		HTTP.request(.POST, host + "/post", params: ["a": "b", "c": file]) { res in
 			print(res.stringValue)
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "form/a"), "b")
@@ -190,25 +188,22 @@ class EzHTTPSampleTests: XCTestCase {
 		let expectation = self.expectation(description: "")
 
 		// first call is HTTP,and eveolute to HTTPS by server redirect
-		HTTP.get(host + "/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fget%3Fa=b") { (res) in
+		HTTP.get(host + "/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fget%3Fa=b") { res in
 			XCTAssertNil(res.error)
 			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "args/a"), "b")
 			expectation.fulfill()
 		}
 		waitForExpectations(timeout: 5, handler: nil)
-
 	}
 
 	func testChunk() {
 		let expectation = self.expectation(description: "")
 
-		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { (res) in
+		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { res in
 			// HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
 			XCTAssertNil(res.error)
 			expectation.fulfill()
 		}
 		waitForExpectations(timeout: 15, handler: nil)
-
 	}
-
 }
