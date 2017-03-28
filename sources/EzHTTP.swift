@@ -10,7 +10,7 @@ public extension URLSession {
 
 	func requestData(_ request: URLRequest, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
 		let task = dataTask(with: request) { d, r, e in
-			completionHandler(d, r as? HTTPURLResponse, e as? NSError)
+			completionHandler(d, r as? HTTPURLResponse, e as NSError?)
 		}
 		task.resume()
 		return task
@@ -27,7 +27,7 @@ public extension URLSession {
 
 	func requestFile(_ request: URLRequest, _ completionHandler: @escaping (URL?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDownloadTask {
 		let task = downloadTask(with: request) { u, r, e in
-			completionHandler(u, r as? HTTPURLResponse, e as? NSError)
+			completionHandler(u, r as? HTTPURLResponse, e as NSError?)
 		}
 		task.resume()
 		return task
