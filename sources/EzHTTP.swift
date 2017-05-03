@@ -4,7 +4,7 @@
 
 import Foundation
 
-// MARK: - NSURLSession
+// MARK: - URLSession
 
 public extension URLSession {
 
@@ -19,6 +19,42 @@ public extension URLSession {
 	func get(_ urls: String, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
 		guard let url = URL(string: urls) else { return nil }
 		return requestData(URLRequest(url: url), completionHandler)
+	}
+}
+
+// MARK: - URLRequest
+
+public extension URLRequest {
+	public var curlComand: String {
+		var r = "curl -v "
+
+		if let method = httpMethod {
+			r += "-X \(method) "
+		}
+
+		for (k, v) in allHTTPHeaderFields ?? [:] {
+			r += "-H '\(k): \(v)' "
+		}
+
+		for (k, v) in HTTP.shared.config.httpAdditionalHeaders ?? [:] {
+			if let ks = k as? String, let vs = v as? String {
+				r += "-H '\(ks): \(vs)' "
+			}
+		}
+
+		if let u = url, let cookies = HTTPCookieStorage.shared.cookies(for: u) {
+			if cookies.count > 0 {
+				r += "-H 'Cookie: " + cookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; ") + "' "
+			}
+		}
+
+		if let body = httpBody {
+			r += "-d '" + (String(data: body, encoding: .utf8) ?? "(binary?)") + "' "
+		}
+
+		r += url?.absoluteString ?? ""
+
+		return r
 	}
 }
 
@@ -304,7 +340,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 extension HTTP {
 
 	public static func defaultLogHandler(_ res: Response) {
-		print(res)
+		print("⚡\n" + res.description)
 	}
 }
 
@@ -429,22 +465,26 @@ public extension HTTP {
 		public var headers: [AnyHashable: String] { return response?.allHeaderFields as? [AnyHashable: String] ?? [:] }
 
 		public var description: String {
-			var result = "[Res] "
-			result += request?.url?.absoluteString ?? "unknownURL"
-			result += " (\(Int(duration * 1000))ms)\n"
+			var result = "[Request \(request?.url?.absoluteString ?? "")]\n"
+			result += request?.curlComand ?? ""
+
+			result += "\n[Response \(Int(duration * 1000))ms \(response?.statusCode ?? 0) (" + HTTPURLResponse.localizedString(forStatusCode: response?.statusCode ?? 0) + ") \(response?.url?.absoluteString ?? "")]\n"
+			for (k, v) in response?.allHeaderFields ?? [:] { result += "< \(k): \(v)\n" }
 
 			if let e = error { result += "Error:" + e.localizedDescription }
 
 			if let d = data {
 				if let s = String(data: d, encoding: String.Encoding.utf8) {
-					if s.characters.count < 24 { result += s }
-					else { result += (s as NSString).substring(to: 24) + "...length: \(s.characters.count)" }
+					if s.characters.count < 512 { result += s }
+					else { result += (s as NSString).substring(to: 512) + "...length: \(s.characters.count)" }
 				} else {
-					return "data length: \(d.count / 1024) KB"
+					result += "data length: \(d.count / 1024) KB"
 				}
 			} else {
 				result += "(no-data)"
 			}
+
+			result += "\n[EOD]"
 			return result
 		}
 	}
