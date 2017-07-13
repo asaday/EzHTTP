@@ -59,7 +59,7 @@ POST
 
 POST with custom Headers
 
-	HTTP.request(.POST, "https://httpbin.org/post",headers: ["Custom-Content":"HAHAHA"])
+	HTTP.request(.POST, "https://httpbin.org/post", headers: ["Custom-Content":"HAHAHA"])
 
 POST with JSON
 
