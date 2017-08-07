@@ -69,7 +69,7 @@ open class NetworkIndicator: NSObject {
 		#endif
 	}
 
-	func stopIndicator() {
+	@objc func stopIndicator() {
 		#if os(iOS)
 			if total > 0 { return }
 			DispatchQueue.main.async {

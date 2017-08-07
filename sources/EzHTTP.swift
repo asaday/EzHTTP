@@ -28,9 +28,11 @@ public extension URLRequest {
 	public var curlComand: String {
 		var r = "curl -v "
 
-		if let method = httpMethod {
+		if let method = httpMethod, method != "GET" {
 			r += "-X \(method) "
 		}
+
+		r += "'" + (url?.absoluteString ?? "") + "'"
 
 		for (k, v) in allHTTPHeaderFields ?? [:] {
 			r += "-H '\(k): \(v)' "
@@ -42,17 +44,13 @@ public extension URLRequest {
 			}
 		}
 
-		if let u = url, let cookies = HTTPCookieStorage.shared.cookies(for: u) {
-			if cookies.count > 0 {
-				r += "-H 'Cookie: " + cookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; ") + "' "
-			}
+		if let u = url, let cookies = HTTPCookieStorage.shared.cookies(for: u), cookies.count > 0 {
+			r += "-H 'Cookie: " + cookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; ") + "' "
 		}
 
 		if let body = httpBody {
 			r += "-d '" + (String(data: body, encoding: .utf8) ?? "(binary?)") + "' "
 		}
-
-		r += url?.absoluteString ?? ""
 
 		return r
 	}
@@ -121,7 +119,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		}
 	}
 
-	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm", path = "???path", header = "???header" }
+	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm", path = "???path", header = "???header", body = "???body" }
 
 	override init() {
 		super.init()
@@ -299,6 +297,12 @@ open class HTTP: NSObject, URLSessionDelegate {
 			mode = .multipartForm
 		}
 
+		if let r = sp?[ParamMode.body.rawValue] {
+			if let d = r as? Data { req.httpBody = d }
+			if let d = r as? String { req.httpBody = d.data(using: .utf8) }
+			return req
+		}
+
 		if !postASJSON && hasMultipartFile(sp) { mode = .multipartForm }
 
 		guard let p = sp else { return req }
@@ -457,7 +461,11 @@ public extension HTTP {
 			guard let json = try? JSONSerialization.jsonObject(with: dat, options: .allowFragments) else { return nil }
 			return json as? NSObject
 		}
-
+		
+		public var jsonDictionary: NSDictionary? {
+			return jsonObject as? NSDictionary
+		}
+		
 		public var status: Int { return response?.statusCode ?? 0 }
 		public var dataValue: Data { return data ?? Data() }
 		public var stringValue: String { return string ?? "" }
