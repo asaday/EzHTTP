@@ -361,14 +361,14 @@ extension HTTP {
 // MARK: static
 
 public extension HTTP {
-	//	static func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest {
-	//		return shared.createRequest(method, url, params: params, headers: headers)
-	//	}
-	//
-	//	static func createRequest(_ method: Method, _ urlstring: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
-	//		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return nil }
-	//		return createRequest(method, url, params: params, headers: headers)
-	//	}
+	static func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+		return shared.createRequest(method, url, params: params, headers: headers)
+	}
+
+	static func createRequest(_ method: Method, _ urlstring: String, params: [String: Any]?, headers: [String: String]?) -> URLRequest? {
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return nil }
+		return createRequest(method, url, params: params, headers: headers)
+	}
 
 	@discardableResult static func request(_ request: URLRequest, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(request, handler: handler)
