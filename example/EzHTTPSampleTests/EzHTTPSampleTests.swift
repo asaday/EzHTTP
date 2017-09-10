@@ -154,6 +154,17 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectations(timeout: 5, handler: nil)
 	}
 
+	func testPostJSON2() {
+		let expectation = self.expectation(description: "")
+		HTTP.request(.POST, host + "/post", json: ["a": "b"]) { res in
+			print(res.stringValue)
+			XCTAssertNil(res.error)
+			XCTAssertEqual(self.findJSONString(res.jsonObject, path: "json/a"), "b")
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 5, handler: nil)
+	}
+
 	// need json post check
 	// curl -X POST -H "Content-type: application/json" -d '{"k":"v"}' https://httpbin.org/post
 
