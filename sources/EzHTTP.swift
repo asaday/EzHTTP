@@ -26,7 +26,7 @@ public extension URLSession {
 
 public extension URLRequest {
 	public var curlComand: String {
-		var r = "curl -v "
+		var r = "curl "
 
 		if let method = httpMethod, method != "GET" {
 			r += "-X \(method) "
@@ -90,12 +90,16 @@ open class HTTP: NSObject, URLSessionDelegate {
 	open var logHandler: ResponseHandler?
 	open var stubHandler: ((_ request: URLRequest) -> Response?)?
 
-	open var useIndicator: Bool = true
 	open var escapeATS: Bool = false
 
 	var session: URLSession?
-	var squeue: OperationQueue?
-	var hqueue: OperationQueue?
+	var squeue = OperationQueue()
+	var hqueue = OperationQueue()
+
+	open var useIndicator: Bool {
+		set { NetworkIndicator.shared.enabled = newValue }
+		get { return NetworkIndicator.shared.enabled }
+	}
 
 	open class Task {
 		open var sessionTask: URLSessionTask?
@@ -126,16 +130,22 @@ open class HTTP: NSObject, URLSessionDelegate {
 		// config.HTTPMaximumConnectionsPerHost = 6
 		// config.timeoutIntervalForRequest = 15
 		// logHandler = HTTP.defaultLogHandler
+
+		hqueue.maxConcurrentOperationCount = 12
+		session = URLSession(configuration: config, delegate: self, delegateQueue: squeue)
+
 		#if os(iOS)
-			NetworkIndicator.setState("", false) // to skip lazy load
-		#else
-			useIndicator = false
+			NetworkIndicator.addOberveQueue(squeue)
+			NetworkIndicator.addOberveQueue(hqueue)
+			useIndicator = true
 		#endif
 	}
 
 	deinit {
-		NetworkIndicator.removeOberveQueue(squeue)
-		NetworkIndicator.removeOberveQueue(hqueue)
+		#if os(iOS)
+			NetworkIndicator.removeOberveQueue(squeue)
+			NetworkIndicator.removeOberveQueue(hqueue)
+		#endif
 	}
 
 	open func request(_ request: URLRequest, handler: @escaping ResponseHandler) -> Task? {
@@ -174,16 +184,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 		}
 
 		if escapeATS && SockHTTPOperation.isATSBlocked(request.url) { // HTTP
-			if hqueue == nil {
-				let q = OperationQueue()
-				q.maxConcurrentOperationCount = 12
-				if useIndicator { NetworkIndicator.addOberveQueue(q) }
-				hqueue = q
-			}
-
 			let op = SockHTTPOperation(request: request, completion: comp)
 			op.rehttpsSession = session
-			hqueue?.addOperation(op)
+			hqueue.addOperation(op)
 			task.httpOperation = op
 
 		} else { // normal
@@ -257,6 +260,11 @@ open class HTTP: NSObject, URLSessionDelegate {
 		req.httpMethod = method.rawValue
 		req.timeoutInterval = config.timeoutIntervalForRequest
 
+		func addContentType(_ s: String) {
+			if req.value(forHTTPHeaderField: "Content-Type") != nil { return }
+			req.setValue(s, forHTTPHeaderField: "Content-Type")
+		}
+
 		// config header is auto merged
 		headers?.forEach { req.setValue($1, forHTTPHeaderField: $0) }
 		if let r = params?[ParamMode.header.rawValue] as? [String: String] {
@@ -309,7 +317,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		if let r = sp?[ParamMode.json.rawValue] as? [Any] { // for array json
 			if JSONSerialization.isValidJSONObject(r) { req.httpBody = try? JSONSerialization.data(withJSONObject: r, options: []) }
-			req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+			addContentType("application/json")
 			return req
 		}
 
@@ -320,16 +328,16 @@ open class HTTP: NSObject, URLSessionDelegate {
 		case .json:
 			if JSONSerialization.isValidJSONObject(p) { req.httpBody = try? JSONSerialization.data(withJSONObject: p, options: []) }
 			if req.httpBody == nil { req.httpBody = "{}".data(using: .utf8) } // no-data value
-			req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+			addContentType("application/json")
 
 		case .form:
 			req.httpBody = encodeQuery(p).data(using: String.Encoding.utf8, allowLossyConversion: true)
-			req.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+			addContentType("application/x-www-form-urlencoded; charset=utf-8")
 
 		case .multipartForm:
 			let boundary = "Boundary" + NSUUID().uuidString.replacingOccurrences(of: "-", with: "")
 			req.httpBody = encodeMultiPart(p, boundary: boundary)
-			req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+			addContentType("multipart/form-data; boundary=\(boundary)")
 
 		default:
 			break

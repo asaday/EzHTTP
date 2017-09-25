@@ -7,29 +7,29 @@ import Foundation
 // MARK: - NetworkIndicator
 
 open class NetworkIndicator: NSObject {
-	static let sharedManager = NetworkIndicator()
+	static let shared = NetworkIndicator()
 	var states: [String: Bool] = [:]
 	var queues: [OperationQueue] = []
 	var indicatorTimer: Timer?
 	var visible: Bool = false
+	var enabled: Bool = false
 
-	open static func setState(_ key: String, _ state: Bool) { sharedManager.setState(key, state: state) }
-	open static func start(_ key: String) { sharedManager.setState(key, state: true) }
-	open static func stop(_ key: String) { sharedManager.setState(key, state: false) }
+	open static func setState(_ key: String, _ state: Bool) { shared.setState(key, state: state) }
+	open static func start(_ key: String) { shared.setState(key, state: true) }
+	open static func stop(_ key: String) { shared.setState(key, state: false) }
 
-	open static func addOberveQueue(_ queue: OperationQueue?) {
-		guard let queue = queue else { return }
-		queue.addObserver(sharedManager, forKeyPath: "operationCount", options: .new, context: nil)
-		sharedManager.queues.append(queue)
+	open static func addOberveQueue(_ queue: OperationQueue) {
+		queue.addObserver(shared, forKeyPath: "operationCount", options: .new, context: nil)
+		shared.queues.append(queue)
 	}
 
-	open static func removeOberveQueue(_ queue: OperationQueue?) {
-		guard let queue = queue else { return }
-		queue.removeObserver(sharedManager, forKeyPath: "operationCount")
-		if let idx = sharedManager.queues.index(of: queue) { sharedManager.queues.remove(at: idx) }
+	open static func removeOberveQueue(_ queue: OperationQueue) {
+		queue.removeObserver(shared, forKeyPath: "operationCount")
+		if let idx = shared.queues.index(of: queue) { shared.queues.remove(at: idx) }
 	}
 
 	open override func observeValue(forKeyPath keyPath: String?, of _: Any?, change _: [NSKeyValueChangeKey: Any]?, context _: UnsafeMutableRawPointer?) {
+		if !enabled { return }
 		if keyPath != "operationCount" { return }
 		startIndicator()
 	}
