@@ -38,7 +38,7 @@ public extension URLRequest {
 			r += "-H '\(k): \(v)' "
 		}
 
-		for (k, v) in HTTP.shared.config.httpAdditionalHeaders ?? [:] {
+		for (k, v) in HTTP.shared.session?.configuration.httpAdditionalHeaders ?? [:] {
 			if let ks = k as? String, let vs = v as? String {
 				r += "-H '\(ks): \(vs)' "
 			}
@@ -81,7 +81,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
-	open let config = URLSessionConfiguration.default
 	open var baseURL: URL?
 	open var postASJSON: Bool = false
 
@@ -92,9 +91,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	open var escapeATS: Bool = false
 
-	var session: URLSession?
-	var squeue = OperationQueue()
-	var hqueue = OperationQueue()
+	open var session: URLSession?
+	open var squeue = OperationQueue()
+	open var hqueue = OperationQueue()
 
 	open var useIndicator: Bool {
 		set { NetworkIndicator.shared.enabled = newValue }
@@ -125,20 +124,21 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	public enum ParamMode: String { case query = "???Query", form = "???Form", json = "???Json", multipartForm = "???MultipartForm", path = "???path", header = "???header", body = "???body" }
 
-	override init() {
+	public override init() {
 		super.init()
 		// config.HTTPMaximumConnectionsPerHost = 6
 		// config.timeoutIntervalForRequest = 15
 		// logHandler = HTTP.defaultLogHandler
 
 		hqueue.maxConcurrentOperationCount = 12
-		session = URLSession(configuration: config, delegate: self, delegateQueue: squeue)
+		session = URLSession(configuration: .default, delegate: self, delegateQueue: squeue)
 
 		#if os(iOS)
 			NetworkIndicator.addOberveQueue(squeue)
 			NetworkIndicator.addOberveQueue(hqueue)
 			useIndicator = true
 		#endif
+
 	}
 
 	deinit {
@@ -148,6 +148,10 @@ open class HTTP: NSObject, URLSessionDelegate {
 		#endif
 	}
 
+	open func setConfig(_ config: URLSessionConfiguration){
+		session = URLSession(configuration: config, delegate: self, delegateQueue: squeue)
+	}
+	
 	open func request(_ request: URLRequest, handler: @escaping ResponseHandler) -> Task? {
 
 		let handlecall: ((_ res: Response) -> Void) = { result in
@@ -160,13 +164,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 		if let stub = stubHandler, let r = stub(request) {
 			handlecall(r)
 			return nil
-		}
-
-		if session == nil {
-			let q = OperationQueue()
-			if useIndicator { NetworkIndicator.addOberveQueue(q) }
-			session = URLSession(configuration: config, delegate: self, delegateQueue: q)
-			squeue = q
 		}
 
 		let isMain = Thread.isMainThread
@@ -258,7 +255,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
-		req.timeoutInterval = config.timeoutIntervalForRequest
+		if let timeout = session?.configuration.timeoutIntervalForRequest { req.timeoutInterval = timeout }
 
 		func addContentType(_ s: String) {
 			if req.value(forHTTPHeaderField: "Content-Type") != nil { return }
