@@ -209,7 +209,7 @@ class EzHTTPSampleTests: XCTestCase {
 
 	func testChunk() {
 		let expectation = self.expectation(description: "")
-
+		
 		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { res in
 			// HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
 			XCTAssertNil(res.error)
@@ -217,4 +217,17 @@ class EzHTTPSampleTests: XCTestCase {
 		}
 		waitForExpectations(timeout: 15, handler: nil)
 	}
+	
+	func testStatusError() {
+		let expectation = self.expectation(description: "")
+		
+		HTTP.shared.illegalStatusCodeAsError = true
+		HTTP.request(.GET, host + "/xxxxxxxxx") { res in
+			XCTAssertNotNil(res.error)
+			XCTAssertEqual(res.error?.code, 404)
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 15, handler: nil)
+	}
+	
 }

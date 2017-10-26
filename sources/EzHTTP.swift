@@ -83,7 +83,8 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	open var baseURL: URL?
 	open var postASJSON: Bool = false
-
+	open var illegalStatusCodeAsError: Bool = false
+	
 	open var errorHandler: ResponseHandler?
 	open var successHandler: ResponseHandler?
 	open var logHandler: ResponseHandler?
@@ -172,7 +173,13 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 		let comp: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { data, response, error in
 			let duration = Date().timeIntervalSince(startTime)
-			let res = Response(data: data, error: error, response: response, request: request, duration: duration)
+			var err = error
+
+			if self.illegalStatusCodeAsError, let status = response?.statusCode, status >= 400 {
+				err = NSError(domain: "http", code: status, userInfo: [NSLocalizedDescriptionKey: "\(status) : " + HTTPURLResponse.localizedString(forStatusCode: status)])
+			}
+			
+			let res = Response(data: data, error: err, response: response, request: request, duration: duration)
 			if isMain {
 				DispatchQueue.main.async { handlecall(res) }
 			} else {

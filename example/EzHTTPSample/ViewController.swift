@@ -10,9 +10,13 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		HTTP.shared.config.httpMaximumConnectionsPerHost = 6
-		HTTP.shared.config.timeoutIntervalForRequest = 15
+		let config = URLSessionConfiguration.default
+		config.httpMaximumConnectionsPerHost = 6
+		config.timeoutIntervalForRequest = 15
+		config.httpAdditionalHeaders = ["AAA":"BBB"]
+		HTTP.shared.setConfig(config)
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
+		HTTP.shared.illegalStatusCodeAsError = true
 
 		//HTTP.shared.escapeATS = true
 
