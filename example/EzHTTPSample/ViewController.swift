@@ -13,12 +13,12 @@ class ViewController: UIViewController {
 		let config = URLSessionConfiguration.default
 		config.httpMaximumConnectionsPerHost = 6
 		config.timeoutIntervalForRequest = 15
-		config.httpAdditionalHeaders = ["AAA":"BBB"]
+		config.httpAdditionalHeaders = ["AAA": "BBB"]
 		HTTP.shared.setConfig(config)
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
 		HTTP.shared.illegalStatusCodeAsError = true
 
-		//HTTP.shared.escapeATS = true
+		// HTTP.shared.escapeATS = true
 
 		let lbl = UILabel(frame: view.bounds)
 		lbl.numberOfLines = 0

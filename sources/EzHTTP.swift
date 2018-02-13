@@ -84,7 +84,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 	open var baseURL: URL?
 	open var postASJSON: Bool = false
 	open var illegalStatusCodeAsError: Bool = false
-	
+
 	open var errorHandler: ResponseHandler?
 	open var successHandler: ResponseHandler?
 	open var logHandler: ResponseHandler?
@@ -139,7 +139,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 			NetworkIndicator.addOberveQueue(hqueue)
 			useIndicator = true
 		#endif
-
 	}
 
 	deinit {
@@ -149,10 +148,10 @@ open class HTTP: NSObject, URLSessionDelegate {
 		#endif
 	}
 
-	open func setConfig(_ config: URLSessionConfiguration){
+	open func setConfig(_ config: URLSessionConfiguration) {
 		session = URLSession(configuration: config, delegate: self, delegateQueue: squeue)
 	}
-	
+
 	open func request(_ request: URLRequest, handler: @escaping ResponseHandler) -> Task? {
 
 		let handlecall: ((_ res: Response) -> Void) = { result in
@@ -178,7 +177,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 			if self.illegalStatusCodeAsError, let status = response?.statusCode, status >= 400 {
 				err = NSError(domain: "http", code: status, userInfo: [NSLocalizedDescriptionKey: "\(status) : " + HTTPURLResponse.localizedString(forStatusCode: status)])
 			}
-			
+
 			let res = Response(data: data, error: err, response: response, request: request, duration: duration)
 			if isMain {
 				DispatchQueue.main.async { handlecall(res) }
@@ -465,6 +464,16 @@ public extension HTTP {
 	}
 }
 
+extension String {
+	var length: Int {
+		#if swift(>=3.2)
+			return count
+		#else
+			return characters.count
+		#endif
+	}
+}
+
 // MARK: response
 public extension HTTP {
 	typealias ResponseHandler = ((_ result: Response) -> Void)
@@ -521,8 +530,8 @@ public extension HTTP {
 
 			if let d = data {
 				if let s = String(data: d, encoding: String.Encoding.utf8) {
-					if s.characters.count < 512 { result += s }
-					else { result += (s as NSString).substring(to: 512) + "...length: \(s.characters.count)" }
+					if s.length < 512 { result += s }
+					else { result += (s as NSString).substring(to: 512) + "...length: \(s.length)" }
 				} else {
 					result += "data length: \(d.count / 1024) KB"
 				}
