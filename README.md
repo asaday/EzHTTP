@@ -8,7 +8,7 @@ EzHTTP is easy-to-use library for HTTP access for your iOS application.
 - useful response (use as string,json,data)
 - auto indicator show/hide
 - log,stub handler
-- esacape AppTransportSecurity
+- escape App-Transport-Security
 - short code
 
 ## Requirements
