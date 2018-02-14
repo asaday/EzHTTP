@@ -98,14 +98,14 @@ Create a request
 
 ##### JSON
 
-- `$0.jsonObject` NSObject?
-- `$0.jsonObjectValue` NSObject
+- `$0.jsonObject` NSObject? (json decoded)
+- `$0.jsonObjectValue` NSObject (json decoded)
 
 
 ##### Data
 
-- `$0.data` NSData
-- `$0.dataValue` NSData?
+- `$0.data` Data
+- `$0.dataValue` Data?
 
 ##### Error
 
@@ -161,12 +161,12 @@ header| in header
 
 - path example
 
-URLstring = "https://example.com/{user}"  
-param = [HTTP.ParamMode.path.rawValue: ["user": "123"]]
+	URLstring = "https://example.com/{user}"  
+	param = [HTTP.ParamMode.path.rawValue: ["user": "123"]]
 
 make URL as
 
-"https://example.com/123"
+	"https://example.com/123"
 
 
 ### Log,Stub
@@ -201,7 +201,7 @@ ATS(AppTransportSecurity) is enabled(default) and call as http://, request to se
 
 auto checked NSAllowsArbitraryLoads and NSExceptionAllowsInsecureHTTPLoads/NSExceptionDomains
 
-- protcol HTTP/1.1 
+- protocol HTTP/1.1 
 - cookie managed (NSHTTPCookieStorage.sharedHTTPCookieStorage)
 - auto redirect
 - redirect to HTTPS, auto changed to use NSURLSession
