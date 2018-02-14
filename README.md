@@ -1,6 +1,11 @@
 
 # EzHTTP
 
+[![Build Status](https://travis-ci.org/robbiehanson/EzHTTP.svg?branch=master)](https://travis-ci.org/robbiehanson/EzHTTP) 
+[![Version Status](https://img.shields.io/cocoapods/v/EzHTTP.svg?style=flat)](http://cocoadocs.org/docsets/EzHTTP) 
+[![Platform](http://img.shields.io/cocoapods/p/EzHTTP.svg?style=flat)](http://cocoapods.org/?q=EzHTTP) 
+
+
 EzHTTP is easy-to-use library for HTTP access for your iOS application. 
 
 - simplest API
