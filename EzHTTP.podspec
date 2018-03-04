@@ -14,8 +14,5 @@ s.tvos.deployment_target = '9.0'
  
 s.source = { :git=> "https://github.com/asaday/EzHTTP.git", :tag => s.version }
 s.source_files  = "sources/**/*.{swift,h}"
-s.pod_target_xcconfig = {
-  'SWIFT_VERSION' => '4.0'
-}
 
 end
