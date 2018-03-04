@@ -1,10 +1,10 @@
 language: objective-c
-osx_image: xcodex9.2
+osx_image: xcode9.2
 
 before_install:
   - gem install cocoapods
   - cd example
-  - pod update
+  - pod install
   - cd ..
 
 script:
