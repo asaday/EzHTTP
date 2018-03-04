@@ -1,7 +1,5 @@
 PODS:
-  - CocoaAsyncSocket (7.6.2)
-  - EzHTTP (3.1.8):
-    - CocoaAsyncSocket
+  - EzHTTP (3.2.0)
 
 DEPENDENCIES:
   - EzHTTP (from `../`)
@@ -11,8 +9,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 3541e024f48c54b251638ef72d51dd42808de932
-  EzHTTP: 992089cf20f742912c54d3f103122b5194bdafb7
+  EzHTTP: 0c9b32b5c511c8126440a4b24c0d6ee8ee2b43b8
 
 PODFILE CHECKSUM: cd2f40b5c2733d7790a0dcf3dd029530e31eedfd
 

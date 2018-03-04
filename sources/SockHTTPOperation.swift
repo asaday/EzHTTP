@@ -3,16 +3,15 @@
 // The MIT License (MIT)
 
 import Foundation
-import CocoaAsyncSocket
 
-class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
+class SockHTTPOperation: Operation, EzSocketDelegate {
 
 	var request: URLRequest
 	let completion: (Data?, HTTPURLResponse?, NSError?) -> Void
 
-	var socket: GCDAsyncSocket?
-	var url: URL!
-	var response: HTTPURLResponse!
+	var socket: EzSocket?
+	var url: URL?
+	var response: HTTPURLResponse?
 	var redirectCount: Int = 0
 
 	var rehttpsSession: URLSession?
@@ -101,25 +100,21 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 			return
 		}
 
-		guard let host = url.host else {
+		guard let host = url?.host else {
 			compError(2, msg: "")
 			return
 		}
 
-		socket = GCDAsyncSocket(delegate: self, delegateQueue: SockHTTPOperation.dqueue)
+		socket = EzSocket() // GCDAsyncSocket(delegate: self, delegateQueue: SockHTTPOperation.dqueue)
 
-		do {
-			try socket?.connect(toHost: host, onPort: UInt16(url.port ?? 80), withTimeout: request.timeoutInterval)
-		} catch let e as NSError {
-			compError(e)
-			return
-		}
+		socket?.delegate = self
+		socket?.connect(toHost: host, onPort: url?.port ?? 80)
 	}
 
-	func socketDidDisconnect(_: GCDAsyncSocket, withError err: Error?) {
+	func didDisconnect(error: Error?) {
 		if !isExecuting { return }
 
-		if let e = err {
+		if let e = error {
 			compError(e as NSError)
 			return
 		}
@@ -127,23 +122,14 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		done()
 	}
 
-	func socket(_: GCDAsyncSocket, shouldTimeoutReadWithTag _: Int, elapsed _: TimeInterval, bytesDone _: UInt) -> TimeInterval {
-		compError(8, msg: "timeout r")
-		return -1
-	}
-
-	func socket(_: GCDAsyncSocket, shouldTimeoutWriteWithTag _: Int, elapsed _: TimeInterval, bytesDone _: UInt) -> TimeInterval {
-		compError(8, msg: "timeout w")
-		return -1
-	}
-
-	func socket(_: GCDAsyncSocket, didConnectToHost _: String, port _: UInt16) {
+	func didConnect() {
 
 		var headlines: [String] = []
-		var path = url.path
-		if let q = url.query { path += "?" + q }
-		headlines.append("\(request.httpMethod!) \(path) HTTP/1.1")
-		headlines.append("Host: \(url.host ?? "")")
+		guard let u = url else { return }
+		var path = u.path
+		if let q = u.query { path += "?" + q }
+		headlines.append("\(request.httpMethod ?? "GET") \(path) HTTP/1.1")
+		headlines.append("Host: \(u.host ?? "")")
 
 		var agent = "" // "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_0 like Mac OS X) AppleWebKit/601.0.0 (KHTML, like Gecko) Version/10.0 Mobile/13F69 Safari/601.0 "
 		agent += (Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "") + "/" + (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "") + " "
@@ -155,7 +141,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		if let reqheaders = request.allHTTPHeaderFields {
 			for (k, v) in reqheaders { headers[k] = v }
 		}
-		if let cookies = HTTPCookieStorage.shared.cookies(for: url) {
+		if let cookies = HTTPCookieStorage.shared.cookies(for: u) {
 			let cheaders = HTTPCookie.requestHeaderFields(with: cookies)
 			for (k, v) in cheaders { headers[k] = v }
 		}
@@ -169,11 +155,11 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 		var dat = headlines.joined(separator: "\r\n").data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data()
 		if let d = request.httpBody { dat.append(d) }
 
-		socket?.write(dat, withTimeout: request.timeoutInterval, tag: 0)
-		socket?.readData(to: CRLFCRLFData, withTimeout: request.timeoutInterval, tag: 0)
+		socket?.write(dat)
+		socket?.read(delimiter: CRLFCRLFData)
 	}
 
-	func socket(_: GCDAsyncSocket, didRead data: Data, withTag _: Int) {
+	func didRead(data: Data) {
 		if isCancelled {
 			done()
 			return
@@ -195,7 +181,7 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 				if let location = r.allHeaderFields["Location"] as? String {
 					closeSocket()
 					url = URL(string: location, relativeTo: url) ?? url
-					if url.scheme == "https" {
+					if url?.scheme == "https" {
 						var nreq = request
 						nreq.url = url
 						rehttpsTask = rehttpsSession?.requestData(nreq, { d, r, e in
@@ -211,19 +197,19 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
 			response = r
 
-			if (response.allHeaderFields["Transfer-Encoding"] as? String) == "chunked" {
-				socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			if (response?.allHeaderFields["Transfer-Encoding"] as? String) == "chunked" {
+				socket?.read(delimiter: CRLFData)
 				chunkData = NSMutableData()
 				sequence = .chunkedLength
 				return
 			}
 
-			guard let lenstr = response.allHeaderFields["Content-Length"] as? String, let len = UInt(lenstr) else {
+			guard let lenstr = response?.allHeaderFields["Content-Length"] as? String, let len = Int(lenstr) else {
 				compError(4, msg: "http no-length")
 				return
 			}
 
-			socket?.readData(toLength: len, withTimeout: request.timeoutInterval, tag: 0)
+			socket?.read(length: len)
 			sequence = .body
 
 		case .body:
@@ -242,16 +228,16 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 				done()
 				return
 			}
-			socket?.readData(toLength: UInt(hexValue), withTimeout: request.timeoutInterval, tag: 0)
+			socket?.read(length: Int(hexValue))
 			sequence = .chunkedBody
 
 		case .chunkedBody:
 			chunkData?.append(data)
-			socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			socket?.read(delimiter: CRLFData)
 			sequence = .chunkBodyTail
 
 		case .chunkBodyTail:
-			socket?.readData(to: CRLFData, withTimeout: request.timeoutInterval, tag: 0)
+			socket?.read(delimiter: CRLFData)
 			sequence = .chunkedLength
 		}
 	}
@@ -266,22 +252,22 @@ class SockHTTPOperation: Operation, GCDAsyncSocketDelegate {
 
 		headlines.removeFirst()
 		var headers: [String: String] = [:]
+		guard let u = url else { return nil }
 
 		for h in headlines {
 			guard let ra = h.range(of: ":") else { continue }
-
-			let k = h.substring(to: ra.lowerBound).trimmingCharacters(in: CharacterSet.whitespaces)
-			let v = h.substring(from: ra.upperBound).trimmingCharacters(in: CharacterSet.whitespaces)
+			let k = h.prefix(upTo: ra.lowerBound).trimmingCharacters(in: CharacterSet.whitespaces)
+			let v = h.suffix(from: ra.upperBound).trimmingCharacters(in: CharacterSet.whitespaces)
 
 			if k == "Set-Cookie" {
-				let cookies = HTTPCookie.cookies(withResponseHeaderFields: [k: v], for: url)
+				let cookies = HTTPCookie.cookies(withResponseHeaderFields: [k: v], for: u)
 				HTTPCookieStorage.shared.setCookies(cookies, for: url, mainDocumentURL: url)
 				continue
 			}
 			headers[k] = v
 		}
 
-		return HTTPURLResponse(url: url, statusCode: status, httpVersion: st[0], headerFields: headers)
+		return HTTPURLResponse(url: u, statusCode: status, httpVersion: st[0], headerFields: headers)
 	}
 
 	func closeSocket() {

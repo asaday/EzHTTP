@@ -9,4 +9,4 @@ before_install:
 
 script:
   - xcodebuild test -workspace example/EzHTTPSample.xcworkspace/ -scheme EzHTTPSample -destination 'platform=iOS Simulator,name=iPhone 7'
-  - pod lib lint --allow-warnings
+  - pod lib lint
