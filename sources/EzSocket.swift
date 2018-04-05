@@ -108,7 +108,7 @@ class EzSocket: NSObject, StreamDelegate {
 			let read = stream.read(buf, maxLength: size)
 			readBuf.append(buf, count: read)
 		}
-		buf.deallocate(capacity: size)
+		buf.deallocate()
 		readOut()
 	}
 

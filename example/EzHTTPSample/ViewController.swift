@@ -10,12 +10,8 @@ class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		let config = URLSessionConfiguration.default
-		config.httpMaximumConnectionsPerHost = 6
-		config.timeoutIntervalForRequest = 15
-		config.httpAdditionalHeaders = ["AAA": "BBB"]
-		HTTP.shared.setConfig(config)
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
+		HTTP.shared.retryHandler = HTTP.defaultRetryHandler
 		HTTP.shared.illegalStatusCodeAsError = true
 
 		HTTP.shared.escapeATS = true
@@ -24,8 +20,9 @@ class ViewController: UIViewController {
 		lbl.numberOfLines = 0
 		view.addSubview(lbl)
 
-		HTTP.get("http://httpbin.org/get") {
+		HTTP.get("https://httpbin.org/get") {
 			lbl.text = $0.string
+			print($0.error ?? "")
 		}
 	}
 }

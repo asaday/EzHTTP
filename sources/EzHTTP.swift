@@ -81,16 +81,17 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
-	open var baseURL: URL?
-	open var postASJSON: Bool = false
-	open var illegalStatusCodeAsError: Bool = false
+	open var illegalStatusCodeAsError: Bool = true // retuen error when http status error
+	open var escapeATS: Bool = false // you can call http when 'Allow Arbitrary Loads' = NO
+	open var allowSelfSignedSSL: Bool = false // if yes, set 'Allow Arbitrary Loads' = YES (should use only debug)
+	open var postASJSON: Bool = false // force set json when POST, but you had better to use method json customized
 
+	open var baseURL: URL?
 	open var errorHandler: ResponseHandler?
 	open var successHandler: ResponseHandler?
 	open var logHandler: ResponseHandler?
 	open var stubHandler: ((_ request: URLRequest) -> Response?)?
-
-	open var escapeATS: Bool = false
+	open var retryHandler: ((_ result: Response) -> Bool)?
 
 	open var session: URLSession?
 	open var squeue = OperationQueue()
@@ -104,6 +105,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 	open class Task {
 		open var sessionTask: URLSessionTask?
 		open var httpOperation: Operation?
+		open var retriedCount: Int = 0
 		open func cancel() {
 			sessionTask?.cancel()
 			sessionTask = nil
@@ -148,21 +150,45 @@ open class HTTP: NSObject, URLSessionDelegate {
 		#endif
 	}
 
+	public func urlSession(_: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+		if allowSelfSignedSSL {
+			var credential: URLCredential?
+			if let trust = challenge.protectionSpace.serverTrust { credential = URLCredential(trust: trust) }
+			completionHandler(URLSession.AuthChallengeDisposition.useCredential, credential)
+			return
+		}
+		completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+	}
+
 	open func setConfig(_ config: URLSessionConfiguration) {
 		session = URLSession(configuration: config, delegate: self, delegateQueue: squeue)
 	}
 
 	open func request(_ request: URLRequest, handler: @escaping ResponseHandler) -> Task? {
+		return requestR(request, orgtask: nil, handler: handler)
+	}
 
-		let handlecall: ((_ res: Response) -> Void) = { result in
-			if result.data == nil { self.errorHandler?(result) }
-			else { self.successHandler?(result) }
+	private func requestR(_ request: URLRequest, orgtask: Task?, handler: @escaping ResponseHandler) -> Task? {
+
+		let handlecall: ((_ res: Response, _ task: Task?) -> Void) = { result, task in
+			if result.error != nil || result.data == nil {
+				if self.retryHandler?(result) ?? false {
+					let nt = self.requestR(request, orgtask: task, handler: handler)
+					task?.httpOperation = nt?.httpOperation
+					task?.sessionTask = nt?.sessionTask
+					task?.retriedCount = (task?.retriedCount ?? 0) + 1
+					return
+				}
+				self.errorHandler?(result)
+			} else {
+				self.successHandler?(result)
+			}
 			self.logHandler?(result)
 			handler(result)
 		}
 
 		if let stub = stubHandler, let r = stub(request) {
-			handlecall(r)
+			handlecall(r, nil)
 			return nil
 		}
 
@@ -170,7 +196,10 @@ open class HTTP: NSObject, URLSessionDelegate {
 		let startTime = Date()
 		let task = Task()
 
-		let comp: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { data, response, error in
+		var otask: Task?
+		if retryHandler != nil { otask = orgtask ?? task }
+
+		let completion: ((Data?, HTTPURLResponse?, NSError?) -> Void) = { data, response, error in
 			let duration = Date().timeIntervalSince(startTime)
 			var err = error
 
@@ -178,22 +207,24 @@ open class HTTP: NSObject, URLSessionDelegate {
 				err = NSError(domain: "http", code: status, userInfo: [NSLocalizedDescriptionKey: "\(status) : " + HTTPURLResponse.localizedString(forStatusCode: status)])
 			}
 
-			let res = Response(data: data, error: err, response: response, request: request, duration: duration)
+			// checker if (otask?.retriedCount ?? 0) < 2 { err = NSError(domain: "", code: 1, userInfo: nil) }
+
+			let res = Response(data: data, error: err, response: response, request: request, duration: duration, retriedCount: otask?.retriedCount ?? 0)
 			if isMain {
-				DispatchQueue.main.async { handlecall(res) }
+				DispatchQueue.main.async { handlecall(res, otask) }
 			} else {
-				DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async { handlecall(res) }
+				DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async { handlecall(res, otask) }
 			}
 		}
 
 		if escapeATS && SockHTTPOperation.isATSBlocked(request.url) { // HTTP
-			let op = SockHTTPOperation(request: request, completion: comp)
+			let op = SockHTTPOperation(request: request, completion: completion)
 			op.rehttpsSession = session
 			hqueue.addOperation(op)
 			task.httpOperation = op
 
 		} else { // normal
-			task.sessionTask = session?.requestData(request, comp)
+			task.sessionTask = session?.requestData(request, completion)
 		}
 		return task
 	}
@@ -362,10 +393,15 @@ open class HTTP: NSObject, URLSessionDelegate {
 }
 
 // for debbug
-extension HTTP {
+public extension HTTP {
 
-	public static func defaultLogHandler(_ res: Response) {
-		print("⚡\n" + res.description)
+	static func defaultLogHandler(_ res: Response) {
+		print("⚡ \(res.description)\n")
+	}
+
+	static func defaultRetryHandler(_ res: Response) -> Bool {
+		print("retry\(res.retriedCount) \(res.request?.url?.absoluteString ?? "") \n")
+		return res.retriedCount < 3
 	}
 }
 
@@ -485,17 +521,19 @@ public extension HTTP {
 		public let response: HTTPURLResponse?
 		public let request: URLRequest?
 		public let duration: TimeInterval
+		public let retriedCount: Int
 
-		public init(data: Data?, error: NSError?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval) {
+		public init(data: Data?, error: NSError?, response: HTTPURLResponse?, request: URLRequest?, duration: TimeInterval = 0, retriedCount: Int = 0) {
 			self.data = data
 			self.error = error
 			self.response = response
 			self.request = request
 			self.duration = duration
+			self.retriedCount = retriedCount
 		}
 
 		public init(error: NSError) {
-			self.init(data: nil, error: error, response: nil, request: nil, duration: 0)
+			self.init(data: nil, error: error, response: nil, request: nil)
 		}
 
 		public var string: String? {

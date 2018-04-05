@@ -19,7 +19,7 @@ EzHTTP is easy-to-use library for HTTP access for your iOS application.
 ## Requirements
 
 - iOS 8.0+
-- Xcode 8+ (for swift3)
+- Xcode 8+
 
 (for swift 2.x , use version 0.0.x)
 
@@ -58,9 +58,12 @@ Async
 	let r = HTTP.getAsync("https://httpbin.org/get")
 	print(r.string)
 
-POST 
+POST with form
 
 	HTTP.request(.POST, "https://httpbin.org/post", params: ["form1": "TEST"]) {}
+
+	// auto appended header "Content-Type: application/x-www-form-urlencoded; charset=utf-8"
+	// or if included HTTP.MultipartFile() , header is "multipart/form-data; boundary=..."
 
 POST with custom Headers
 
@@ -68,9 +71,15 @@ POST with custom Headers
 
 POST with JSON
 
-	HTTP.sharedInstance.postASJSON = true // default is false
+	HTTP.request(.POST, "https://httpbin.org/post", json: ["foo": "bar"]) {}
 
-	HTTP.request(.POST, "https://httpbin.org/post", params: ["foo": "bar"]) {}
+	// auto appended header "Content-Type: application/json"
+
+POST with raw data
+
+	// data is String or Data
+
+	HTTP.request(.POST, "https://httpbin.org/post", body: data, headers:["Content-Type": "application/atom+xml"]) {}
 
 Other methods
 
@@ -104,8 +113,8 @@ Create a request
 
 ##### Data
 
-- `$0.data` Data
-- `$0.dataValue` Data?
+- `$0.data` Data?
+- `$0.dataValue` Data
 
 ##### Error
 
@@ -118,6 +127,7 @@ Create a request
 - `duration`
 - `request`
 - `description`
+- `retriedCount`
 
 ### Request make
 
@@ -133,7 +143,7 @@ GET| query
 POST,PUT | application/x-www-form-urlencoded or application/json
 POST with file | multipart/form-data
 
-to JSON `HTTP.shard.postASJSON = true`
+change to JSON POST `HTTP.shard.postASJSON = true`
 
 to use file, add in params HTTP.MultipartFile, auto changed to multipart/form-data
 
@@ -169,24 +179,48 @@ make URL as
 	"https://example.com/123"
 
 
-### Log,Stub
+### Log,Stub,Retry
 
-	typealias ResponseHandler = ((result: Response) -> Void)
-	public var errorHandler: ResponseHandler?
-	public var successHandler: ResponseHandler?
-	public var logHandler: ResponseHandler?
-	public var stubHandler: ((request: NSURLRequest) -> Response?)?
+	var errorHandler: ((result: Response) -> Void)?
+	var successHandler: ((result: Response) -> Void)?
+	var logHandler: ((result: Response) -> Void)?
+	var stubHandler: ((request: NSURLRequest) -> Response?)?
+	var retryHandler: ((_ result: Response) -> Bool)?
+
 
 to use 
 
-	HTTP.shared.logHander = {}
+	HTTP.shared.logHandler = { print($0.stringValue) }
+
+or you can use preset handler
+
+	HTTP.shared.logHandler = HTTP.defaultLogHandler
+	HTTP.shared.retryHandler = HTTP.defaultRetryHandler
+
+retry hanlder example
+
+	HTTP.shared.retryHandler = { return $0.retriedCount < 3 }
+
+
 	
 kind|desc
 ---|---
 error | called at error
 success | called at success
 log | every called
-stub | call and get response. if response is nil, do as normal 
+stub | call and get response. if response is nil, do as normal http access 
+retry | judge retry
+
+
+### self certified SSL
+
+If you want to use authentication, make the following settings.
+
+set Allow Arbitrary Loads = YES
+
+and
+
+	HTTP.shared.allowSelfSignedSSL = true
 
 
 ### ATS escape
