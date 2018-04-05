@@ -212,9 +212,9 @@ stub | call and get response. if response is nil, do as normal http access
 retry | judge retry
 
 
-### self certified SSL
+### self signed SSL
 
-If you want to use authentication, make the following settings.
+If you want to use self signed SSL authentication, make the following settings.
 
 set Allow Arbitrary Loads = YES
 
