@@ -14,16 +14,16 @@ open class NetworkIndicator: NSObject {
 	var visible: Bool = false
 	var enabled: Bool = false
 
-	open static func setState(_ key: String, _ state: Bool) { shared.setState(key, state: state) }
-	open static func start(_ key: String) { shared.setState(key, state: true) }
-	open static func stop(_ key: String) { shared.setState(key, state: false) }
+	public static func setState(_ key: String, _ state: Bool) { shared.setState(key, state: state) }
+	public static func start(_ key: String) { shared.setState(key, state: true) }
+	public static func stop(_ key: String) { shared.setState(key, state: false) }
 
-	open static func addOberveQueue(_ queue: OperationQueue) {
+	public static func addOberveQueue(_ queue: OperationQueue) {
 		queue.addObserver(shared, forKeyPath: "operationCount", options: .new, context: nil)
 		shared.queues.append(queue)
 	}
 
-	open static func removeOberveQueue(_ queue: OperationQueue) {
+	public static func removeOberveQueue(_ queue: OperationQueue) {
 		queue.removeObserver(shared, forKeyPath: "operationCount")
 		if let idx = shared.queues.index(of: queue) { shared.queues.remove(at: idx) }
 	}

@@ -2,11 +2,10 @@
 // Copyright (c) NagisaWorks asaday
 // The MIT License (MIT)
 
-import XCTest
 import EzHTTP
+import XCTest
 
 class EzHTTPSampleTests: XCTestCase {
-
 	var host = "https://httpbin.org" // http or https
 
 	func findJSONString(_ json: NSObject?, path: String) -> String {

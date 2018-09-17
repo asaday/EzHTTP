@@ -5,7 +5,6 @@
 import Foundation
 
 class SockHTTPOperation: Operation, EzSocketDelegate {
-
 	var request: URLRequest
 	let completion: (Data?, HTTPURLResponse?, NSError?) -> Void
 
@@ -123,7 +122,6 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 	}
 
 	func didConnect() {
-
 		var headlines: [String] = []
 		guard let u = url else { return }
 		var path = u.path

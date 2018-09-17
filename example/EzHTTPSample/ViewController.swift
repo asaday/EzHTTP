@@ -2,11 +2,10 @@
 // Copyright (c) NagisaWorks asaday
 // The MIT License (MIT)
 
-import UIKit
 import EzHTTP
+import UIKit
 
 class ViewController: UIViewController {
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 

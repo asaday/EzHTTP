@@ -7,7 +7,6 @@ import Foundation
 // MARK: - URLSession
 
 public extension URLSession {
-
 	func requestData(_ request: URLRequest, _ completionHandler: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDataTask? {
 		let task = dataTask(with: request) { d, r, e in
 			completionHandler(d, r as? HTTPURLResponse, e as NSError?)
@@ -58,7 +57,6 @@ public extension URLRequest {
 
 // for files
 public extension URLSession {
-
 	func requestFile(_ request: URLRequest, _ completionHandler: @escaping (URL?, HTTPURLResponse?, NSError?) -> Void) -> URLSessionDownloadTask {
 		let task = downloadTask(with: request) { u, r, e in
 			completionHandler(u, r as? HTTPURLResponse, e as NSError?)
@@ -77,7 +75,7 @@ extension NSMutableData {
 // MARK: - HTTP
 
 open class HTTP: NSObject, URLSessionDelegate {
-	open static let shared: HTTP = HTTP()
+	public static let shared: HTTP = HTTP()
 
 	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
@@ -169,7 +167,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 	}
 
 	private func requestR(_ request: URLRequest, orgtask: Task?, handler: @escaping ResponseHandler) -> Task? {
-
 		let handlecall: ((_ res: Response, _ task: Task?) -> Void) = { result, task in
 			if result.error != nil || result.data == nil {
 				if self.retryHandler?(result) ?? false {
@@ -230,7 +227,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 	}
 
 	func encodeQuery(_ params: [String: Any]?) -> String {
-
 		func escape(_ v: String) -> String {
 			var cs = NSMutableCharacterSet.urlQueryAllowed
 			cs.remove(charactersIn: ":#[]@!$&'()*+,;=")
@@ -278,7 +274,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 			guard let d = v as? MultipartFile else { continue }
 			r.appendString("--\(boundary)\r\n")
 			var cda = ["form-data", "name=\"\(k)\""]
-			if !d.filename.isEmpty { cda.append("filename=\"\(d.filename)\"")}
+			if !d.filename.isEmpty { cda.append("filename=\"\(d.filename)\"") }
 			r.appendString("Content-Disposition: " + cda.joined(separator: "; ") + "\r\n")
 			r.appendString("Content-Type: \(d.mime)\r\n\r\n")
 			r.append(d.data)
@@ -291,7 +287,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 	// url is String or URL
 	open func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest {
-
 		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
 		if let timeout = session?.configuration.timeoutIntervalForRequest { req.timeoutInterval = timeout }
@@ -396,7 +391,6 @@ open class HTTP: NSObject, URLSessionDelegate {
 
 // for debbug
 public extension HTTP {
-
 	static func defaultLogHandler(_ res: Response) {
 		print("⚡ \(res.description)\n")
 	}
@@ -493,7 +487,6 @@ public extension HTTP {
 
 	// param for multi pattern
 	static func makeParams(query: [String: Any]? = nil, form: [String: Any]? = nil, json: [String: Any]? = nil) -> [String: Any] {
-
 		var r: [String: Any] = [:]
 		if let v = query { r[ParamMode.query.rawValue] = v }
 		if let v = form { r[ParamMode.form.rawValue] = v }
@@ -513,11 +506,11 @@ extension String {
 }
 
 // MARK: response
+
 public extension HTTP {
 	typealias ResponseHandler = ((_ result: Response) -> Void)
 
 	struct Response: CustomStringConvertible {
-
 		public let data: Data?
 		public let error: NSError?
 		public let response: HTTPURLResponse?
