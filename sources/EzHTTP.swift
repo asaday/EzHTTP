@@ -277,7 +277,9 @@ open class HTTP: NSObject, URLSessionDelegate {
 		for (k, v) in params {
 			guard let d = v as? MultipartFile else { continue }
 			r.appendString("--\(boundary)\r\n")
-			r.appendString("Content-Disposition: form-data; name=\"\(k)\"; filename=\"\(d.filename)\"\r\n")
+			var cda = ["form-data", "name=\"\(k)\""]
+			if !d.filename.isEmpty { cda.append("filename=\"\(d.filename)\"")}
+			r.appendString("Content-Disposition: " + cda.joined(separator: "; ") + "\r\n")
 			r.appendString("Content-Type: \(d.mime)\r\n\r\n")
 			r.append(d.data)
 			r.appendString("\r\n")

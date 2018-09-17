@@ -53,11 +53,6 @@ Simple GET request
 
 	HTTP.get("https://httpbin.org/get") { print($0.string) }
 
-Async
-
-	let r = HTTP.getAsync("https://httpbin.org/get")
-	print(r.string)
-
 POST with form
 
 	HTTP.request(.POST, "https://httpbin.org/post", params: ["form1": "TEST"]) {}
@@ -65,15 +60,15 @@ POST with form
 	// auto appended header "Content-Type: application/x-www-form-urlencoded; charset=utf-8"
 	// or if included HTTP.MultipartFile() , header is "multipart/form-data; boundary=..."
 
-POST with custom Headers
-
-	HTTP.request(.POST, "https://httpbin.org/post",headers: ["Custom-Content":"HAHAHA"])
-
 POST with JSON
 
 	HTTP.request(.POST, "https://httpbin.org/post", json: ["foo": "bar"]) {}
 
 	// auto appended header "Content-Type: application/json"
+
+POST with custom Headers
+
+	HTTP.request(.POST, "https://httpbin.org/post",headers: ["Custom-Content":"HAHAHA"])
 
 POST with raw data
 
@@ -91,6 +86,11 @@ Create a request
 
 	let req:NSMutableURLRequest = HTTP.createRequest(.GET, "https://httpbin.org/get", params: [:], headers: [:])
 	HTTP.request(req!){}
+
+Async
+
+	let r = HTTP.getAsync("https://httpbin.org/get")
+	print(r.string)
 
 
 ### Response body
