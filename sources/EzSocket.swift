@@ -38,16 +38,16 @@ class EzSocket: NSObject, StreamDelegate {
 		inputStream?.delegate = self
 		outputStream?.delegate = self
 
-		inputStream?.schedule(in: .main, forMode: .defaultRunLoopMode)
-		outputStream?.schedule(in: .main, forMode: .defaultRunLoopMode)
+		inputStream?.schedule(in: .main, forMode: RunLoop.Mode.default)
+		outputStream?.schedule(in: .main, forMode: RunLoop.Mode.default)
 
 		inputStream?.open()
 		outputStream?.open()
 	}
 
 	func disconnect() {
-		inputStream?.remove(from: .main, forMode: .defaultRunLoopMode)
-		outputStream?.remove(from: .main, forMode: .defaultRunLoopMode)
+		inputStream?.remove(from: .main, forMode: RunLoop.Mode.default)
+		outputStream?.remove(from: .main, forMode: RunLoop.Mode.default)
 		inputStream?.close()
 		outputStream?.close()
 		inputStream = nil
