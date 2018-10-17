@@ -90,15 +90,13 @@ open class HTTP: NSObject, URLSessionDelegate {
 	open var logHandler: ResponseHandler?
 	open var stubHandler: ((_ request: URLRequest) -> Response?)?
 	open var retryHandler: ((_ result: Response) -> Bool)?
+	open var indicatorHandler: ((_ visible: Bool) -> Void)? {
+		didSet { NetworkIndicator.shared.handler = indicatorHandler }
+	}
 
 	open var session: URLSession?
 	open var squeue = OperationQueue()
 	open var hqueue = OperationQueue()
-
-	open var useIndicator: Bool {
-		set { NetworkIndicator.shared.enabled = newValue }
-		get { return NetworkIndicator.shared.enabled }
-	}
 
 	open class Task {
 		open var sessionTask: URLSessionTask?
@@ -134,18 +132,13 @@ open class HTTP: NSObject, URLSessionDelegate {
 		hqueue.maxConcurrentOperationCount = 12
 		session = URLSession(configuration: .default, delegate: self, delegateQueue: squeue)
 
-		#if os(iOS)
-			NetworkIndicator.addOberveQueue(squeue)
-			NetworkIndicator.addOberveQueue(hqueue)
-			useIndicator = true
-		#endif
+		NetworkIndicator.addOberveQueue(squeue)
+		NetworkIndicator.addOberveQueue(hqueue)
 	}
 
 	deinit {
-		#if os(iOS)
-			NetworkIndicator.removeOberveQueue(squeue)
-			NetworkIndicator.removeOberveQueue(hqueue)
-		#endif
+		NetworkIndicator.removeOberveQueue(squeue)
+		NetworkIndicator.removeOberveQueue(hqueue)
 	}
 
 	public func urlSession(_: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

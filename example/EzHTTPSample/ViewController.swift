@@ -11,9 +11,8 @@ class ViewController: UIViewController {
 
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
 		HTTP.shared.retryHandler = HTTP.defaultRetryHandler
-		HTTP.shared.illegalStatusCodeAsError = true
-
 		HTTP.shared.escapeATS = true
+		HTTP.shared.indicatorHandler = { UIApplication.shared.isNetworkActivityIndicatorVisible = $0 }
 
 		let lbl = UILabel(frame: view.bounds)
 		lbl.numberOfLines = 0
