@@ -8,20 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		C35DDEF01D57890E003932EE /* EzHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = C35DDEEF1D57890E003932EE /* EzHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C35E793B1DF508D50060CA99 /* CocoaAsyncSocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */; };
-		C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1A1D45204700FC8D0B /* Indicator.swift */; };
 		C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */; };
 		C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* EzHTTP.swift */; };
+		C3EE49422195CA5200872F98 /* NetworkIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE49402195CA5200872F98 /* NetworkIndicator.swift */; };
+		C3EE49432195CA5200872F98 /* EzSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE49412195CA5200872F98 /* EzSocket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C35DDEEF1D57890E003932EE /* EzHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EzHTTP.h; sourceTree = "<group>"; };
-		C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaAsyncSocket.framework; path = Carthage/Build/iOS/CocoaAsyncSocket.framework; sourceTree = "<group>"; };
-		C36B4E1A1D45204700FC8D0B /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
 		C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SockHTTPOperation.swift; sourceTree = "<group>"; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3D225C61D28AA5200A0F339 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3D225C81D28AA5200A0F339 /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
+		C3EE49402195CA5200872F98 /* NetworkIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkIndicator.swift; sourceTree = "<group>"; };
+		C3EE49412195CA5200872F98 /* EzSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzSocket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,7 +29,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C35E793B1DF508D50060CA99 /* CocoaAsyncSocket.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,7 +38,6 @@
 		C3D225AF1D28AA0900A0F339 = {
 			isa = PBXGroup;
 			children = (
-				C35E793A1DF508D50060CA99 /* CocoaAsyncSocket.framework */,
 				C3D225C41D28AA5200A0F339 /* resources */,
 				C3D225C71D28AA5200A0F339 /* sources */,
 				C3D225BA1D28AA0900A0F339 /* Products */,
@@ -65,9 +63,10 @@
 		C3D225C71D28AA5200A0F339 /* sources */ = {
 			isa = PBXGroup;
 			children = (
+				C3EE49412195CA5200872F98 /* EzSocket.swift */,
+				C3EE49402195CA5200872F98 /* NetworkIndicator.swift */,
 				C35DDEEF1D57890E003932EE /* EzHTTP.h */,
 				C3D225C81D28AA5200A0F339 /* EzHTTP.swift */,
-				C36B4E1A1D45204700FC8D0B /* Indicator.swift */,
 				C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */,
 			);
 			path = sources;
@@ -112,7 +111,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = asada;
 				TargetAttributes = {
 					C3D225B81D28AA0900A0F339 = {
@@ -153,8 +152,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C36B4E1B1D45204700FC8D0B /* Indicator.swift in Sources */,
+				C3EE49422195CA5200872F98 /* NetworkIndicator.swift in Sources */,
 				C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */,
+				C3EE49432195CA5200872F98 /* EzSocket.swift in Sources */,
 				C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,12 +175,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -212,7 +214,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -233,12 +234,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -263,7 +266,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -281,20 +283,17 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -307,19 +306,16 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagisa.EzHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
