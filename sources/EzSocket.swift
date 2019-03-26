@@ -136,11 +136,9 @@ class EzSocket: NSObject, StreamDelegate {
 
 	private func doWrite(stream: OutputStream) {
 		if !isWritable || writeBuf.count == 0 { return }
-		let b = writeBuf
+		let a = [UInt8](writeBuf)
 		writeBuf = Data()
 
-		b.withUnsafeBytes { a -> Void in
-			stream.write(a, maxLength: b.count)
-		}
+        stream.write(a, maxLength: a.count)
 	}
 }

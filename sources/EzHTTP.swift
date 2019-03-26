@@ -24,7 +24,7 @@ public extension URLSession {
 // MARK: - URLRequest
 
 public extension URLRequest {
-	public var curlComand: String {
+	var curlComand: String {
 		var r = "curl "
 
 		if let method = httpMethod, method != "GET" {

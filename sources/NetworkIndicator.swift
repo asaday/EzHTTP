@@ -27,7 +27,7 @@ open class NetworkIndicator: NSObject {
 
 	public static func removeOberveQueue(_ queue: OperationQueue) {
 		queue.removeObserver(shared, forKeyPath: operationCountKey)
-		if let idx = shared.queues.index(of: queue) { shared.queues.remove(at: idx) }
+		if let idx = shared.queues.firstIndex(of: queue) { shared.queues.remove(at: idx) }
 	}
 
 	open override func observeValue(forKeyPath keyPath: String?, of _: Any?, change: [NSKeyValueChangeKey: Any]?, context _: UnsafeMutableRawPointer?) {
