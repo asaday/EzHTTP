@@ -74,8 +74,9 @@ extension NSMutableData {
 
 // MARK: - HTTP
 
-open class HTTP: NSObject, URLSessionDelegate {
+public class HTTP: NSObject, URLSessionDelegate {
 	public static let shared: HTTP = HTTP()
+	public static let HTTPErrorDomain = "http"
 
 	public enum Method: String { case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT }
 
@@ -194,7 +195,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 			var err = error
 
 			if self.illegalStatusCodeAsError, let status = response?.statusCode, status >= 400 {
-				err = NSError(domain: "http", code: status, userInfo: [NSLocalizedDescriptionKey: "\(status) : " + HTTPURLResponse.localizedString(forStatusCode: status)])
+				err = NSError(domain: HTTP.HTTPErrorDomain, code: status, userInfo: [NSLocalizedDescriptionKey: "\(status) : " + HTTPURLResponse.localizedString(forStatusCode: status)])
 			}
 
 			// checker if (otask?.retriedCount ?? 0) < 2 { err = NSError(domain: "", code: 1, userInfo: nil) }
@@ -203,19 +204,20 @@ open class HTTP: NSObject, URLSessionDelegate {
 			if isMain {
 				DispatchQueue.main.async { handlecall(res, otask) }
 			} else {
-				DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async { handlecall(res, otask) }
+				DispatchQueue.global(qos: .background).async { handlecall(res, otask) }
 			}
 		}
 
-		if escapeATS && SockHTTPOperation.isATSBlocked(request.url) { // HTTP
+		if escapeATS, SockHTTPOperation.isATSBlocked(request.url) { // HTTP
 			let op = SockHTTPOperation(request: request, completion: completion)
 			op.rehttpsSession = session
 			hqueue.addOperation(op)
 			task.httpOperation = op
-
-		} else { // normal
-			task.sessionTask = session?.requestData(request, completion)
+			return task
 		}
+
+		// normal
+		task.sessionTask = session?.requestData(request, completion)
 		return task
 	}
 
@@ -302,7 +304,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 		let postmode = (method == .POST || method == .PUT || method == .PATCH)
 
 		var queries = sp?[ParamMode.query.rawValue] as? [String: Any]
-		if !postmode && queries == nil { queries = sp }
+		if !postmode, queries == nil { queries = sp }
 
 		if let p = queries, var uc = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 			var q = encodeQuery(p)
@@ -345,7 +347,7 @@ open class HTTP: NSObject, URLSessionDelegate {
 			return req
 		}
 
-		if !postASJSON && hasMultipartFile(sp) { mode = .multipartForm }
+		if !postASJSON, hasMultipartFile(sp) { mode = .multipartForm }
 
 		guard let p = sp else { return req }
 		switch mode {
@@ -410,6 +412,7 @@ public extension HTTP {
 		return shared.request(request, handler: handler)
 	}
 
+	// url
 	@discardableResult static func request(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping ResponseHandler) -> Task? {
 		return request(shared.createRequest(method, url, params: params, headers: headers), handler)
 	}
@@ -449,33 +452,59 @@ public extension HTTP {
 
 	// async
 	static func requestASync(_ request: URLRequest) -> Response {
-		var r = Response(error: NSError(domain: "http", code: -3, userInfo: [NSLocalizedDescriptionKey: "t/o"]))
-		var done = false
+		var r = Response(error: NSError(domain: HTTPErrorDomain, code: -3, userInfo: [NSLocalizedDescriptionKey: "t/o"]))
+		let sem = DispatchSemaphore(value: 0)
 
-		HTTP.request(request) { r = $0; done = true }
-		while done == false { CFRunLoopRunInMode(CFRunLoopMode.defaultMode, 0.02, false) }
+		DispatchQueue.global(qos: .background).async {
+			HTTP.request(request) {
+				r = $0
+				sem.signal()
+			}
+		}
+		_ = sem.wait(timeout: .now() + 20)
 		return r
 	}
 
+	// async url
 	static func requestASync(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
 		return requestASync(HTTP.shared.createRequest(method, url, params: params, headers: headers))
 	}
 
-	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
-		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return makeURLErrorResponse() }
-		return requestASync(method, url, params: params, headers: headers)
+	static func requestASync(_ method: Method, _ url: URL, json: Any, headers: [String: String]? = nil) -> Response {
+		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.json.rawValue: json], headers: headers))
+	}
+
+	static func requestASync(_ method: Method, _ url: URL, body: Any, headers: [String: String]? = nil) -> Response {
+		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
 	}
 
 	static func getASync(_ url: URL, headers: [String: String]? = nil) -> Response {
 		return requestASync(.GET, url, params: nil, headers: headers)
 	}
 
+	// async url string
+	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return makeURLErrorResponse() }
+		return requestASync(method, url, params: params, headers: headers)
+	}
+
+	static func requestASync(_ method: Method, _ urlstring: String, json: Any, headers: [String: String]? = nil) -> Response {
+		guard let url = shared.createURL(urlstring) else { return makeURLErrorResponse() }
+		return requestASync(method, url, json: json, headers: headers)
+	}
+
+	static func requestASync(_ method: Method, _ urlstring: String, body: Any, headers: [String: String]? = nil) -> Response {
+		guard let url = shared.createURL(urlstring) else { return makeURLErrorResponse() }
+		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
+	}
+
 	static func getASync(_ urlstring: String, headers: [String: String]? = nil) -> Response {
 		return requestASync(.GET, urlstring, params: nil, headers: headers)
 	}
 
+	// error
 	fileprivate static func makeURLErrorResponse() -> Response {
-		return Response(error: NSError(domain: "http", code: -2, userInfo: [NSLocalizedDescriptionKey: "Bad URL"]))
+		return Response(error: NSError(domain: HTTPErrorDomain, code: -2, userInfo: [NSLocalizedDescriptionKey: "Bad URL"]))
 	}
 
 	// param for multi pattern

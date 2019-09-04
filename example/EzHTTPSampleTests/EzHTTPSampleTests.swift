@@ -206,16 +206,16 @@ class EzHTTPSampleTests: XCTestCase {
 		waitForExpectations(timeout: 5, handler: nil)
 	}
 
-	func testChunk() {
-		let expectation = self.expectation(description: "")
-
-		HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { res in
-			// HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
-			XCTAssertNil(res.error)
-			expectation.fulfill()
-		}
-		waitForExpectations(timeout: 15, handler: nil)
-	}
+	//    func testChunk() {
+	//        let expectation = self.expectation(description: "")
+//
+	//        HTTP.request(.GET, "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx") { res in
+	//            // HTTP.request(.GET, host + "/stream-bytes/4096?chunk_size=256") { (res) in
+	//            XCTAssertNil(res.error)
+	//            expectation.fulfill()
+	//        }
+	//        waitForExpectations(timeout: 15, handler: nil)
+	//    }
 
 	func testStatusError() {
 		let expectation = self.expectation(description: "")
@@ -227,5 +227,10 @@ class EzHTTPSampleTests: XCTestCase {
 			expectation.fulfill()
 		}
 		waitForExpectations(timeout: 15, handler: nil)
+	}
+
+	func testGetSync() {
+		let res = HTTP.getASync(host + "/get?a=b")
+		XCTAssertEqual(findJSONString(res.jsonObject, path: "args/a"), "b")
 	}
 }

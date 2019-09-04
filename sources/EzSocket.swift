@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol EzSocketDelegate: class {
+protocol EzSocketDelegate: AnyObject {
 	func didConnect()
 	func didDisconnect(error: Error?)
 	func didRead(data: Data)
@@ -38,16 +38,18 @@ class EzSocket: NSObject, StreamDelegate {
 		inputStream?.delegate = self
 		outputStream?.delegate = self
 
-		inputStream?.schedule(in: .main, forMode: RunLoop.Mode.default)
-		outputStream?.schedule(in: .main, forMode: RunLoop.Mode.default)
+		inputStream?.schedule(in: .current, forMode: .default)
+		outputStream?.schedule(in: .current, forMode: .default)
 
 		inputStream?.open()
 		outputStream?.open()
+		CFRunLoopRun()
 	}
 
 	func disconnect() {
-		inputStream?.remove(from: .main, forMode: RunLoop.Mode.default)
-		outputStream?.remove(from: .main, forMode: RunLoop.Mode.default)
+		CFRunLoopStop(CFRunLoopGetCurrent())
+		inputStream?.remove(from: .current, forMode: .default)
+		outputStream?.remove(from: .current, forMode: .default)
 		inputStream?.close()
 		outputStream?.close()
 		inputStream = nil
@@ -57,13 +59,13 @@ class EzSocket: NSObject, StreamDelegate {
 	func read(delimiter: Data) {
 		requestLength = 0
 		requestDelimiter = delimiter
-		DispatchQueue.main.async { self.readOut() }
+		readOut()
 	}
 
 	func read(length: Int) {
 		requestLength = length
 		requestDelimiter = nil
-		DispatchQueue.main.async { self.readOut() }
+		readOut()
 	}
 
 	func write(_ data: Data) {
@@ -139,6 +141,6 @@ class EzSocket: NSObject, StreamDelegate {
 		let a = [UInt8](writeBuf)
 		writeBuf = Data()
 
-        stream.write(a, maxLength: a.count)
+		stream.write(a, maxLength: a.count)
 	}
 }

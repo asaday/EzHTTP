@@ -73,6 +73,6 @@ open class NetworkIndicator: NSObject {
 		indicatorTimer?.invalidate()
 		indicatorTimer = nil
 		handler?(false)
-//			UIApplication.shared.isNetworkActivityIndicatorVisible = false
+		//			UIApplication.shared.isNetworkActivityIndicatorVisible = false
 	}
 }

@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		ACAE38D5DF41D9DC91E12E50 /* Pods_EzHTTPSampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689A4B51DF72BC3D88CA65DC /* Pods_EzHTTPSampleTests.framework */; };
+		4FB0696AFF53A9E00CE0CF93 /* libPods-EzHTTPSampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */; };
 		C3792E901D4CD3D900B08DEA /* EzHTTPSampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */; };
 		C3D225D91D28AAAC00A0F339 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225D81D28AAAC00A0F339 /* AppDelegate.swift */; };
 		C3D225DB1D28AAAC00A0F339 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225DA1D28AAAC00A0F339 /* ViewController.swift */; };
 		C3D225DE1D28AAAC00A0F339 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3D225DC1D28AAAC00A0F339 /* Main.storyboard */; };
 		C3D225E01D28AAAC00A0F339 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3D225DF1D28AAAC00A0F339 /* Assets.xcassets */; };
 		C3D225E31D28AAAC00A0F339 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3D225E11D28AAAC00A0F339 /* LaunchScreen.storyboard */; };
-		E109CA8BD9CF7B6944D1C55F /* Pods_EzHTTPSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97AB6F75D3265141DF2C787B /* Pods_EzHTTPSample.framework */; };
+		F3EF575B78C3BE224A6D3881 /* libPods-EzHTTPSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,9 +41,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		689A4B51DF72BC3D88CA65DC /* Pods_EzHTTPSampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EzHTTPSampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83EC2942D22942C8183D7C84 /* Pods-EzHTTPSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.release.xcconfig"; sourceTree = "<group>"; };
-		97AB6F75D3265141DF2C787B /* Pods_EzHTTPSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EzHTTPSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3AA4702BEE22552A7BBAB84 /* Pods-EzHTTPSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.debug.xcconfig"; sourceTree = "<group>"; };
 		BFC6B540C7F398D5DB27DB38 /* Pods-EzHTTPSampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		C3792E8D1D4CD3D900B08DEA /* EzHTTPSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EzHTTPSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,7 +54,9 @@
 		C3D225DF1D28AAAC00A0F339 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C3D225E21D28AAAC00A0F339 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C3D225E41D28AAAC00A0F339 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7DA1D43C5474D36B826D402 /* Pods-EzHTTPSampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACAE38D5DF41D9DC91E12E50 /* Pods_EzHTTPSampleTests.framework in Frameworks */,
+				4FB0696AFF53A9E00CE0CF93 /* libPods-EzHTTPSampleTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E109CA8BD9CF7B6944D1C55F /* Pods_EzHTTPSample.framework in Frameworks */,
+				F3EF575B78C3BE224A6D3881 /* libPods-EzHTTPSample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,8 +93,8 @@
 		477BDC705BF5E615E47038C9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				97AB6F75D3265141DF2C787B /* Pods_EzHTTPSample.framework */,
-				689A4B51DF72BC3D88CA65DC /* Pods_EzHTTPSampleTests.framework */,
+				E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */,
+				D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -152,8 +152,6 @@
 				C3792E891D4CD3D900B08DEA /* Sources */,
 				C3792E8A1D4CD3D900B08DEA /* Frameworks */,
 				C3792E8B1D4CD3D900B08DEA /* Resources */,
-				243FB454D5E6F8C320CA43D1 /* [CP] Embed Pods Frameworks */,
-				106D50ED99C3A342ED1F88E5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -174,8 +172,6 @@
 				C3D225D21D28AAAC00A0F339 /* Frameworks */,
 				C3D225D31D28AAAC00A0F339 /* Resources */,
 				C3D225F41D28AAE800A0F339 /* Embed Frameworks */,
-				F481DF7C7799EC8873A48EAC /* [CP] Embed Pods Frameworks */,
-				C3967A6C3F8F30077C9137D8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -248,39 +244,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		106D50ED99C3A342ED1F88E5 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		243FB454D5E6F8C320CA43D1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/EzHTTP/EzHTTP.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EzHTTP.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		3E3EC858BDF3E62231AFCC73 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -315,39 +278,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C3967A6C3F8F30077C9137D8 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F481DF7C7799EC8873A48EAC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/EzHTTP/EzHTTP.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EzHTTP.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

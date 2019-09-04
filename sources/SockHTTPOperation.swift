@@ -38,8 +38,6 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 		return true
 	}
 
-	static let dqueue = DispatchQueue(label: "com.nagisa.httpopration", attributes: [])
-
 	init(request: URLRequest, completion: @escaping (Data?, HTTPURLResponse?, NSError?) -> Void) {
 		self.request = request
 		self.completion = completion
@@ -82,7 +80,7 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 			return
 		}
 		guard let u = request.url, let _ = request.httpMethod else {
-			let error = NSError(domain: "http", code: 1, userInfo: [NSLocalizedDescriptionKey: ""])
+			let error = NSError(domain: HTTP.HTTPErrorDomain, code: 1, userInfo: [NSLocalizedDescriptionKey: ""])
 			completion(nil, nil, error)
 			isFinished = true
 			return
@@ -104,10 +102,14 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 			return
 		}
 
-		socket = EzSocket() // GCDAsyncSocket(delegate: self, delegateQueue: SockHTTPOperation.dqueue)
+		let port = url?.port ?? 80
 
+		socket = EzSocket()
 		socket?.delegate = self
-		socket?.connect(toHost: host, onPort: url?.port ?? 80)
+
+		DispatchQueue.global(qos: .background).async {
+			self.socket?.connect(toHost: host, onPort: port)
+		}
 	}
 
 	func didDisconnect(error: Error?) {
@@ -170,7 +172,7 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 				return
 			}
 
-			if r.statusCode >= 301 && r.statusCode <= 308 {
+			if r.statusCode >= 301, r.statusCode <= 308 {
 				if redirectCount > 10 {
 					compError(3, msg: "http redirect over")
 					return
@@ -182,10 +184,10 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 					if url?.scheme == "https" {
 						var nreq = request
 						nreq.url = url
-						rehttpsTask = rehttpsSession?.requestData(nreq, { d, r, e in
+						rehttpsTask = rehttpsSession?.requestData(nreq) { d, r, e in
 							if !self.isCancelled { self.completion(d, r, e) }
 							self.done()
-						})
+						}
 						return
 					}
 				}
@@ -207,8 +209,8 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 				return
 			}
 
-			socket?.read(length: len)
 			sequence = .body
+			socket?.read(length: len)
 
 		case .body:
 			completion(data, response, nil)
@@ -226,17 +228,17 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 				done()
 				return
 			}
-			socket?.read(length: Int(hexValue))
 			sequence = .chunkedBody
+			socket?.read(length: Int(hexValue))
 
 		case .chunkedBody:
 			chunkData?.append(data)
-			socket?.read(delimiter: CRLFData)
 			sequence = .chunkBodyTail
+			socket?.read(delimiter: CRLFData)
 
 		case .chunkBodyTail:
-			socket?.read(delimiter: CRLFData)
 			sequence = .chunkedLength
+			socket?.read(delimiter: CRLFData)
 		}
 	}
 
@@ -275,6 +277,7 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 	}
 
 	func done() {
+		closeSocket()
 		isExecuting = false
 		isFinished = true
 	}
@@ -285,7 +288,7 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 	}
 
 	func compError(_ code: Int, msg: String) {
-		let error = NSError(domain: "http", code: code, userInfo: [NSLocalizedDescriptionKey: msg])
+		let error = NSError(domain: HTTP.HTTPErrorDomain, code: code, userInfo: [NSLocalizedDescriptionKey: msg])
 		compError(error)
 	}
 }
