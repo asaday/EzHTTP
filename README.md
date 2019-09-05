@@ -33,13 +33,12 @@ To install EzHTTP with CocoaPods, add EzHTTP to the devendencies in your __Podfi
 
 Then, run `pod install` command in your project. 
 
-### Carthage
+### Swift Package
 
-You can also install EzHTTP using Carthage. Add EzHTTP in your __Cartfile__. 
+You can also install EzHTTP using Swift Package Xcode11 later
 
-	github "asaday/EzHTTP"
+	https://github.com/asaday/EzHTTP.git
 
-Then, run `carthage update` command in your project.
 
 ## Usage
 
@@ -87,9 +86,9 @@ Create a request
 	let req:NSMutableURLRequest = HTTP.createRequest(.GET, "https://httpbin.org/get", params: [:], headers: [:])
 	HTTP.request(req!){}
 
-Async
+sync
 
-	let r = HTTP.getAsync("https://httpbin.org/get")
+	let r = HTTP.getSync("https://httpbin.org/get")
 	print(r.string)
 
 

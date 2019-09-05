@@ -230,7 +230,7 @@ class EzHTTPSampleTests: XCTestCase {
 	}
 
 	func testGetSync() {
-		let res = HTTP.getASync(host + "/get?a=b")
+		let res = HTTP.getSync(host + "/get?a=b")
 		XCTAssertEqual(findJSONString(res.jsonObject, path: "args/a"), "b")
 	}
 }

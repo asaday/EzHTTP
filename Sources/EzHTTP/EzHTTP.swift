@@ -451,7 +451,7 @@ public extension HTTP {
 	}
 
 	// async
-	static func requestASync(_ request: URLRequest) -> Response {
+	static func requestSync(_ request: URLRequest) -> Response {
 		var r = Response(error: NSError(domain: HTTPErrorDomain, code: -3, userInfo: [NSLocalizedDescriptionKey: "t/o"]))
 		let sem = DispatchSemaphore(value: 0)
 
@@ -466,40 +466,40 @@ public extension HTTP {
 	}
 
 	// async url
-	static func requestASync(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
-		return requestASync(HTTP.shared.createRequest(method, url, params: params, headers: headers))
+	static func requestSync(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+		return requestSync(HTTP.shared.createRequest(method, url, params: params, headers: headers))
 	}
 
-	static func requestASync(_ method: Method, _ url: URL, json: Any, headers: [String: String]? = nil) -> Response {
-		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.json.rawValue: json], headers: headers))
+	static func requestSync(_ method: Method, _ url: URL, json: Any, headers: [String: String]? = nil) -> Response {
+		return requestSync(shared.createRequest(method, url, params: [HTTP.ParamMode.json.rawValue: json], headers: headers))
 	}
 
-	static func requestASync(_ method: Method, _ url: URL, body: Any, headers: [String: String]? = nil) -> Response {
-		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
+	static func requestSync(_ method: Method, _ url: URL, body: Any, headers: [String: String]? = nil) -> Response {
+		return requestSync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
 	}
 
-	static func getASync(_ url: URL, headers: [String: String]? = nil) -> Response {
-		return requestASync(.GET, url, params: nil, headers: headers)
+	static func getSync(_ url: URL, headers: [String: String]? = nil) -> Response {
+		return requestSync(.GET, url, params: nil, headers: headers)
 	}
 
 	// async url string
-	static func requestASync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
+	static func requestSync(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil) -> Response {
 		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { return makeURLErrorResponse() }
-		return requestASync(method, url, params: params, headers: headers)
+		return requestSync(method, url, params: params, headers: headers)
 	}
 
-	static func requestASync(_ method: Method, _ urlstring: String, json: Any, headers: [String: String]? = nil) -> Response {
+	static func requestSync(_ method: Method, _ urlstring: String, json: Any, headers: [String: String]? = nil) -> Response {
 		guard let url = shared.createURL(urlstring) else { return makeURLErrorResponse() }
-		return requestASync(method, url, json: json, headers: headers)
+		return requestSync(method, url, json: json, headers: headers)
 	}
 
-	static func requestASync(_ method: Method, _ urlstring: String, body: Any, headers: [String: String]? = nil) -> Response {
+	static func requestSync(_ method: Method, _ urlstring: String, body: Any, headers: [String: String]? = nil) -> Response {
 		guard let url = shared.createURL(urlstring) else { return makeURLErrorResponse() }
-		return requestASync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
+		return requestSync(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers))
 	}
 
-	static func getASync(_ urlstring: String, headers: [String: String]? = nil) -> Response {
-		return requestASync(.GET, urlstring, params: nil, headers: headers)
+	static func getSync(_ urlstring: String, headers: [String: String]? = nil) -> Response {
+		return requestSync(.GET, urlstring, params: nil, headers: headers)
 	}
 
 	// error

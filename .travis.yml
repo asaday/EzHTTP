@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode10
+osx_image: xcode10.3
 
 before_install:
   - gem install cocoapods
@@ -9,4 +9,5 @@ before_install:
 
 script:
   - xcodebuild test -workspace example/EzHTTPSample.xcworkspace/ -scheme EzHTTPSample -destination 'platform=iOS Simulator,name=iPhone 8'
-  - pod lib lint
+  - pod lib lint  --allow-warnings
+

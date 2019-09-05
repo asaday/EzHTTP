@@ -7,8 +7,8 @@ import Foundation
 // MARK: - NetworkIndicator
 
 open class NetworkIndicator: NSObject {
-	static let shared = NetworkIndicator()
-	var handler: ((_ visible: Bool) -> Void)?
+	public static let shared = NetworkIndicator()
+	public var handler: ((_ visible: Bool) -> Void)?
 
 	var states: [String: Bool] = [:]
 	var queues: [OperationQueue] = []

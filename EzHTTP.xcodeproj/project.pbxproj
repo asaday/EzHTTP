@@ -7,21 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C35DDEF01D57890E003932EE /* EzHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = C35DDEEF1D57890E003932EE /* EzHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */; };
-		C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225C81D28AA5200A0F339 /* EzHTTP.swift */; };
-		C3EE49422195CA5200872F98 /* NetworkIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE49402195CA5200872F98 /* NetworkIndicator.swift */; };
-		C3EE49432195CA5200872F98 /* EzSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3EE49412195CA5200872F98 /* EzSocket.swift */; };
+		C3ED1D8E23217C8E00B611CB /* EzSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8A23217C8E00B611CB /* EzSocket.swift */; };
+		C3ED1D8F23217C8E00B611CB /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */; };
+		C3ED1D9023217C8E00B611CB /* NetworkIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8C23217C8E00B611CB /* NetworkIndicator.swift */; };
+		C3ED1D9123217C8E00B611CB /* SockHTTPOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8D23217C8E00B611CB /* SockHTTPOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C35DDEEF1D57890E003932EE /* EzHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EzHTTP.h; sourceTree = "<group>"; };
-		C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SockHTTPOperation.swift; sourceTree = "<group>"; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C3D225C61D28AA5200A0F339 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C3D225C81D28AA5200A0F339 /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
-		C3EE49402195CA5200872F98 /* NetworkIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkIndicator.swift; sourceTree = "<group>"; };
-		C3EE49412195CA5200872F98 /* EzSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzSocket.swift; sourceTree = "<group>"; };
+		C3ED1D8A23217C8E00B611CB /* EzSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzSocket.swift; sourceTree = "<group>"; };
+		C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
+		C3ED1D8C23217C8E00B611CB /* NetworkIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkIndicator.swift; sourceTree = "<group>"; };
+		C3ED1D8D23217C8E00B611CB /* SockHTTPOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SockHTTPOperation.swift; sourceTree = "<group>"; };
+		C3ED1D9223217E8B00B611CB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,8 +36,7 @@
 		C3D225AF1D28AA0900A0F339 = {
 			isa = PBXGroup;
 			children = (
-				C3D225C41D28AA5200A0F339 /* resources */,
-				C3D225C71D28AA5200A0F339 /* sources */,
+				C3ED1D8823217C8E00B611CB /* Sources */,
 				C3D225BA1D28AA0900A0F339 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,24 +49,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C3D225C41D28AA5200A0F339 /* resources */ = {
+		C3ED1D8823217C8E00B611CB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				C3D225C61D28AA5200A0F339 /* Info.plist */,
+				C3ED1D9223217E8B00B611CB /* Info.plist */,
+				C3ED1D8923217C8E00B611CB /* EzHTTP */,
 			);
-			path = resources;
+			path = Sources;
 			sourceTree = "<group>";
 		};
-		C3D225C71D28AA5200A0F339 /* sources */ = {
+		C3ED1D8923217C8E00B611CB /* EzHTTP */ = {
 			isa = PBXGroup;
 			children = (
-				C3EE49412195CA5200872F98 /* EzSocket.swift */,
-				C3EE49402195CA5200872F98 /* NetworkIndicator.swift */,
-				C35DDEEF1D57890E003932EE /* EzHTTP.h */,
-				C3D225C81D28AA5200A0F339 /* EzHTTP.swift */,
-				C36B4E1C1D45205E00FC8D0B /* SockHTTPOperation.swift */,
+				C3ED1D8A23217C8E00B611CB /* EzSocket.swift */,
+				C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */,
+				C3ED1D8C23217C8E00B611CB /* NetworkIndicator.swift */,
+				C3ED1D8D23217C8E00B611CB /* SockHTTPOperation.swift */,
 			);
-			path = sources;
+			path = EzHTTP;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -79,7 +76,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C35DDEF01D57890E003932EE /* EzHTTP.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,10 +149,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3EE49422195CA5200872F98 /* NetworkIndicator.swift in Sources */,
-				C3D225CB1D28AA5200A0F339 /* EzHTTP.swift in Sources */,
-				C3EE49432195CA5200872F98 /* EzSocket.swift in Sources */,
-				C36B4E1D1D45205E00FC8D0B /* SockHTTPOperation.swift in Sources */,
+				C3ED1D8F23217C8E00B611CB /* EzHTTP.swift in Sources */,
+				C3ED1D9023217C8E00B611CB /* NetworkIndicator.swift in Sources */,
+				C3ED1D8E23217C8E00B611CB /* EzSocket.swift in Sources */,
+				C3ED1D9123217C8E00B611CB /* SockHTTPOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +283,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -309,7 +305,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

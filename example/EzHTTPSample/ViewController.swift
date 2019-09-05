@@ -13,13 +13,14 @@ class ViewController: UIViewController {
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
 		HTTP.shared.retryHandler = HTTP.defaultRetryHandler
 		HTTP.shared.escapeATS = true
-
+        NetworkIndicator.shared.handler = { UIApplication.shared.isNetworkActivityIndicatorVisible = $0 }
+        
 		let lbl = UILabel(frame: view.bounds)
         lbl.textColor = .black
 		lbl.numberOfLines = 0
 		view.addSubview(lbl)
 
-		lbl.text = HTTP.getASync("https://httpbin.org/get").string
+		lbl.text = HTTP.getSync("https://httpbin.org/get").string
 
 		//                HTTP.get("https://httpbin.org/get") {
 		//                    lbl.text = $0.string
