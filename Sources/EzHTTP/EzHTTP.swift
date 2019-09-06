@@ -84,6 +84,7 @@ public class HTTP: NSObject, URLSessionDelegate {
 	open var escapeATS: Bool = false // you can call http when 'Allow Arbitrary Loads' = NO
 	open var allowSelfSignedSSL: Bool = false // if yes, set 'Allow Arbitrary Loads' = YES (should use only debug)
 	open var postASJSON: Bool = false // force set json when POST, but you had better to use method json customized
+	open var timeout: TimeInterval?
 
 	open var baseURL: URL?
 	open var errorHandler: ResponseHandler?
@@ -92,8 +93,17 @@ public class HTTP: NSObject, URLSessionDelegate {
 	open var stubHandler: ((_ request: URLRequest) -> Response?)?
 	open var retryHandler: ((_ result: Response) -> Bool)?
 	open var indicatorHandler: ((_ visible: Bool) -> Void)? {
-		didSet { NetworkIndicator.shared.handler = indicatorHandler }
+		didSet {
+			if !isUseIndicator {
+				NetworkIndicator.addOberveQueue(squeue)
+				NetworkIndicator.addOberveQueue(hqueue)
+				isUseIndicator = true
+			}
+			NetworkIndicator.shared.handler = indicatorHandler
+		}
 	}
+
+	var isUseIndicator = false
 
 	open var session: URLSession?
 	open var squeue = OperationQueue()
@@ -126,20 +136,15 @@ public class HTTP: NSObject, URLSessionDelegate {
 
 	public override init() {
 		super.init()
-		// config.HTTPMaximumConnectionsPerHost = 6
-		// config.timeoutIntervalForRequest = 15
-		// logHandler = HTTP.defaultLogHandler
-
 		hqueue.maxConcurrentOperationCount = 12
 		session = URLSession(configuration: .default, delegate: self, delegateQueue: squeue)
-
-		NetworkIndicator.addOberveQueue(squeue)
-		NetworkIndicator.addOberveQueue(hqueue)
 	}
 
 	deinit {
-		NetworkIndicator.removeOberveQueue(squeue)
-		NetworkIndicator.removeOberveQueue(hqueue)
+		if isUseIndicator {
+			NetworkIndicator.removeOberveQueue(squeue)
+			NetworkIndicator.removeOberveQueue(hqueue)
+		}
 	}
 
 	public func urlSession(_: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -284,7 +289,7 @@ public class HTTP: NSObject, URLSessionDelegate {
 	open func createRequest(_ method: Method, _ url: URL, params: [String: Any]?, headers: [String: String]?) -> URLRequest {
 		var req = URLRequest(url: url)
 		req.httpMethod = method.rawValue
-		if let timeout = session?.configuration.timeoutIntervalForRequest { req.timeoutInterval = timeout }
+		if let t = timeout { req.timeoutInterval = t }
 
 		func addContentType(_ s: String) {
 			if req.value(forHTTPHeaderField: "Content-Type") != nil { return }
@@ -461,7 +466,7 @@ public extension HTTP {
 				sem.signal()
 			}
 		}
-		_ = sem.wait(timeout: .now() + 20)
+		_ = sem.wait(timeout: .now() + 30)
 		return r
 	}
 

@@ -8,15 +8,16 @@ import UIKit
 class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
-        view.backgroundColor = .white
-        
+		view.backgroundColor = .white
+
 		HTTP.shared.logHandler = HTTP.defaultLogHandler
 		HTTP.shared.retryHandler = HTTP.defaultRetryHandler
 		HTTP.shared.escapeATS = true
-        NetworkIndicator.shared.handler = { UIApplication.shared.isNetworkActivityIndicatorVisible = $0 }
-        
+		HTTP.shared.timeout = 20
+		//   HTTP.shared.indicatorHandler = { UIApplication.shared.isNetworkActivityIndicatorVisible = $0 }
+
 		let lbl = UILabel(frame: view.bounds)
-        lbl.textColor = .black
+		lbl.textColor = .black
 		lbl.numberOfLines = 0
 		view.addSubview(lbl)
 
