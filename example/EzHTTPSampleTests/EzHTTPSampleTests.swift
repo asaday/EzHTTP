@@ -233,4 +233,26 @@ class EzHTTPSampleTests: XCTestCase {
 		let res = HTTP.getSync(host + "/get?a=b")
 		XCTAssertEqual(findJSONString(res.jsonObject, path: "args/a"), "b")
 	}
+
+	func testGetAndDecode() {
+		struct Result: Codable {
+			struct Args: Codable {
+				var a: String
+				var b: String
+			}
+
+            var origin: String
+            var url: String
+			var args: Args
+		}
+
+		let expectation = self.expectation(description: "")
+
+		HTTP.requestAndDecode(.GET, host + "/get", params: ["a": "b"]) { (result: Result?, response) in
+			XCTAssertNil(response.error)
+			XCTAssertEqual(result?.args.a, "b")
+			expectation.fulfill()
+		}
+		waitForExpectations(timeout: 5, handler: nil)
+	}
 }

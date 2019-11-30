@@ -413,6 +413,7 @@ public extension HTTP {
 		return createRequest(method, url, params: params, headers: headers)
 	}
 
+	// request
 	@discardableResult static func request(_ request: URLRequest, _ handler: @escaping ResponseHandler) -> Task? {
 		return shared.request(request, handler: handler)
 	}
@@ -519,6 +520,65 @@ public extension HTTP {
 		if let v = form { r[ParamMode.form.rawValue] = v }
 		if let v = json { r[ParamMode.json.rawValue] = v }
 		return r
+	}
+
+	// batch operation
+	static func batch(reuqests: [URLRequest], completion: @escaping ([Response]) -> Void) {
+		let srcQueue: DispatchQueue = Thread.isMainThread ? .main : DispatchQueue.global(qos: .background)
+		let length = reuqests.count
+
+		DispatchQueue.global(qos: .background).async {
+			let grp = DispatchGroup()
+			var idxresults: [Int: Response] = [:]
+			for (idx, r) in reuqests.enumerated() {
+				grp.enter()
+				request(r) {
+					idxresults[idx] = $0
+					grp.leave()
+				}
+			}
+
+			grp.notify(queue: srcQueue) {
+				var r: [Response] = []
+				for idx in 0 ..< length { if let a = idxresults[idx] { r.append(a) } }
+				if r.count != length { r.removeAll() }
+				completion(r)
+			}
+		}
+	}
+
+	// objdecoder request
+	static func requestAndDecode<T: Codable>(_ request: URLRequest, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		return shared.request(request) { handler(ObjectDecoder().optionalDecode(T.self, from: $0.data), $0) }
+	}
+
+	// objdecoder url
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ url: URL, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		return requestAndDecode(shared.createRequest(method, url, params: params, headers: headers), handler)
+	}
+
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ url: URL, json: Any, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		return requestAndDecode(shared.createRequest(method, url, params: [HTTP.ParamMode.json.rawValue: json], headers: headers), handler)
+	}
+
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ url: URL, body: Any, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		return requestAndDecode(shared.createRequest(method, url, params: [HTTP.ParamMode.body.rawValue: body], headers: headers), handler)
+	}
+
+	// objdecoder url string
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ urlstring: String, params: [String: Any]? = nil, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		guard let url = shared.createURL(urlstring, inpath: params?[ParamMode.path.rawValue] as? [String: String]) else { handler(nil, makeURLErrorResponse()); return nil }
+		return requestAndDecode(method, url, params: params, headers: headers, handler)
+	}
+
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ urlstring: String, json: Any, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		guard let url = shared.createURL(urlstring) else { handler(nil, makeURLErrorResponse()); return nil }
+		return requestAndDecode(method, url, json: json, headers: headers, handler)
+	}
+
+	@discardableResult static func requestAndDecode<T: Codable>(_ method: Method, _ urlstring: String, body: Any, headers: [String: String]? = nil, _ handler: @escaping (T?, Response) -> Void) -> Task? {
+		guard let url = shared.createURL(urlstring) else { handler(nil, makeURLErrorResponse()); return nil }
+		return requestAndDecode(method, url, body: body, headers: headers, handler)
 	}
 }
 

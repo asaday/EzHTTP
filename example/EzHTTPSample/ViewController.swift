@@ -5,6 +5,17 @@
 import EzHTTP
 import UIKit
 
+struct Result: Codable {
+	struct Args: Codable {
+		var a: String
+		var b: String
+	}
+
+    var origin: String
+    var url: String
+	var args: Args
+}
+
 class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -27,5 +38,9 @@ class ViewController: UIViewController {
 		//                    lbl.text = $0.string
 		//                    print($0.error ?? "")
 		//                }
+
+		HTTP.requestAndDecode(.GET, "https://httpbin.org/get", params: ["a": "its result", "b": 2]) { (result: Result?, _) in
+			print(result?.args.a ?? "")
+		}
 	}
 }
