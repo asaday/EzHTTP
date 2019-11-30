@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C31A428623924A98001F9521 /* ObjectDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A428523924A98001F9521 /* ObjectDecoder.swift */; };
 		C3ED1D8E23217C8E00B611CB /* EzSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8A23217C8E00B611CB /* EzSocket.swift */; };
 		C3ED1D8F23217C8E00B611CB /* EzHTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */; };
 		C3ED1D9023217C8E00B611CB /* NetworkIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ED1D8C23217C8E00B611CB /* NetworkIndicator.swift */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C31A428523924A98001F9521 /* ObjectDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ObjectDecoder.swift; path = sources/EzHTTP/ObjectDecoder.swift; sourceTree = SOURCE_ROOT; };
 		C3D225B91D28AA0900A0F339 /* EzHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EzHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3ED1D8A23217C8E00B611CB /* EzSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzSocket.swift; sourceTree = "<group>"; };
 		C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EzHTTP.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 		C3ED1D8923217C8E00B611CB /* EzHTTP */ = {
 			isa = PBXGroup;
 			children = (
+				C31A428523924A98001F9521 /* ObjectDecoder.swift */,
 				C3ED1D8A23217C8E00B611CB /* EzSocket.swift */,
 				C3ED1D8B23217C8E00B611CB /* EzHTTP.swift */,
 				C3ED1D8C23217C8E00B611CB /* NetworkIndicator.swift */,
@@ -152,6 +155,7 @@
 				C3ED1D8F23217C8E00B611CB /* EzHTTP.swift in Sources */,
 				C3ED1D9023217C8E00B611CB /* NetworkIndicator.swift in Sources */,
 				C3ED1D8E23217C8E00B611CB /* EzSocket.swift in Sources */,
+				C31A428623924A98001F9521 /* ObjectDecoder.swift in Sources */,
 				C3ED1D9123217C8E00B611CB /* SockHTTPOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
