@@ -219,7 +219,7 @@ extension ObjectDecoder {
 	}
 
 	func dateFormat(_ s: String) -> Date? {
-		if #available(iOS 10.0, *) {
+        if #available(iOS 10.0, tvOS 10.0, macOS 10.12, *) {
 			let formatter = ISO8601DateFormatter()
 			formatter.formatOptions = .withInternetDateTime
 			return formatter.date(from: s)
