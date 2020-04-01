@@ -19,8 +19,8 @@ class SockHTTPOperation: Operation, EzSocketDelegate {
 	enum Sequence: Int { case header, body, chunkedLength, chunkedBody, chunkBodyTail }
 	var sequence: Sequence = .header
 	var chunkData: NSMutableData?
-	let CRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0D, 0x0A])), count: 2)
-	let CRLFCRLFData = Data(bytes: UnsafePointer<UInt8>([UInt8]([0x0D, 0x0A, 0x0D, 0x0A])), count: 4)
+	let CRLFData = Data([0x0D, 0x0A])
+	let CRLFCRLFData = Data([0x0D, 0x0A, 0x0D, 0x0A])
 
 	class func isATSBlocked(_ url: URL?) -> Bool {
 		guard let url = url else { return false }

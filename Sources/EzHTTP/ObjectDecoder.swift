@@ -352,7 +352,7 @@ extension Decoder {
 }
 
 public class ObjectEncoder: JSONEncoder {
-	override init() {
+	public override init() {
 		super.init()
 		dateEncodingStrategy = .custom { d, encoder in
 			var container = encoder.singleValueContainer()
