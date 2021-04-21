@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4FB0696AFF53A9E00CE0CF93 /* libPods-EzHTTPSampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */; };
+		B513CC22180A593A23C4BCCF /* libPods-EzHTTPSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DB7D87157F44A27A343226B /* libPods-EzHTTPSample.a */; };
+		B9B592D61C454405B2187EC8 /* libPods-EzHTTPSampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26AF13A588EADBCD0CFD664F /* libPods-EzHTTPSampleTests.a */; };
 		C3792E901D4CD3D900B08DEA /* EzHTTPSampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */; };
 		C3D225D91D28AAAC00A0F339 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225D81D28AAAC00A0F339 /* AppDelegate.swift */; };
 		C3D225DB1D28AAAC00A0F339 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D225DA1D28AAAC00A0F339 /* ViewController.swift */; };
 		C3D225DE1D28AAAC00A0F339 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3D225DC1D28AAAC00A0F339 /* Main.storyboard */; };
 		C3D225E01D28AAAC00A0F339 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3D225DF1D28AAAC00A0F339 /* Assets.xcassets */; };
 		C3D225E31D28AAAC00A0F339 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3D225E11D28AAAC00A0F339 /* LaunchScreen.storyboard */; };
-		F3EF575B78C3BE224A6D3881 /* libPods-EzHTTPSample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,9 +41,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		83EC2942D22942C8183D7C84 /* Pods-EzHTTPSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.release.xcconfig"; sourceTree = "<group>"; };
-		B3AA4702BEE22552A7BBAB84 /* Pods-EzHTTPSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.debug.xcconfig"; sourceTree = "<group>"; };
-		BFC6B540C7F398D5DB27DB38 /* Pods-EzHTTPSampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.release.xcconfig"; sourceTree = "<group>"; };
+		0362D4F92FC7B638CC49AF33 /* Pods-EzHTTPSampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.debug.xcconfig"; path = "Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.debug.xcconfig"; sourceTree = "<group>"; };
+		0DB7D87157F44A27A343226B /* libPods-EzHTTPSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		26AF13A588EADBCD0CFD664F /* libPods-EzHTTPSampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B7FDEC8A4D0766E2231E16F /* Pods-EzHTTPSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.debug.xcconfig"; path = "Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.debug.xcconfig"; sourceTree = "<group>"; };
+		55AB7818B849C994693E700B /* Pods-EzHTTPSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSample.release.xcconfig"; path = "Target Support Files/Pods-EzHTTPSample/Pods-EzHTTPSample.release.xcconfig"; sourceTree = "<group>"; };
+		9A13F44FBF0BD7CB5E69D7CB /* Pods-EzHTTPSampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.release.xcconfig"; path = "Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		C3792E8D1D4CD3D900B08DEA /* EzHTTPSampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EzHTTPSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3792E8F1D4CD3D900B08DEA /* EzHTTPSampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EzHTTPSampleTests.swift; sourceTree = "<group>"; };
 		C3792E911D4CD3D900B08DEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,9 +57,6 @@
 		C3D225DF1D28AAAC00A0F339 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C3D225E21D28AAAC00A0F339 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C3D225E41D28AAAC00A0F339 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D7DA1D43C5474D36B826D402 /* Pods-EzHTTPSampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EzHTTPSampleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EzHTTPSampleTests/Pods-EzHTTPSampleTests.debug.xcconfig"; sourceTree = "<group>"; };
-		E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EzHTTPSample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FB0696AFF53A9E00CE0CF93 /* libPods-EzHTTPSampleTests.a in Frameworks */,
+				B9B592D61C454405B2187EC8 /* libPods-EzHTTPSampleTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,31 +72,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3EF575B78C3BE224A6D3881 /* libPods-EzHTTPSample.a in Frameworks */,
+				B513CC22180A593A23C4BCCF /* libPods-EzHTTPSample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1C7C72CF4EECA9D3267407B8 /* Pods */ = {
+		9EA14359AEEE4AEA6A8230B2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				B3AA4702BEE22552A7BBAB84 /* Pods-EzHTTPSample.debug.xcconfig */,
-				83EC2942D22942C8183D7C84 /* Pods-EzHTTPSample.release.xcconfig */,
-				D7DA1D43C5474D36B826D402 /* Pods-EzHTTPSampleTests.debug.xcconfig */,
-				BFC6B540C7F398D5DB27DB38 /* Pods-EzHTTPSampleTests.release.xcconfig */,
+				4B7FDEC8A4D0766E2231E16F /* Pods-EzHTTPSample.debug.xcconfig */,
+				55AB7818B849C994693E700B /* Pods-EzHTTPSample.release.xcconfig */,
+				0362D4F92FC7B638CC49AF33 /* Pods-EzHTTPSampleTests.debug.xcconfig */,
+				9A13F44FBF0BD7CB5E69D7CB /* Pods-EzHTTPSampleTests.release.xcconfig */,
 			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		477BDC705BF5E615E47038C9 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E8F17B358AF029C0E1DB2B24 /* libPods-EzHTTPSample.a */,
-				D6A374AF9D453CE016EED354 /* libPods-EzHTTPSampleTests.a */,
-			);
-			name = Frameworks;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		C3792E8E1D4CD3D900B08DEA /* EzHTTPSampleTests */ = {
@@ -114,8 +105,8 @@
 				C3D225D71D28AAAC00A0F339 /* EzHTTPSample */,
 				C3792E8E1D4CD3D900B08DEA /* EzHTTPSampleTests */,
 				C3D225D61D28AAAC00A0F339 /* Products */,
-				1C7C72CF4EECA9D3267407B8 /* Pods */,
-				477BDC705BF5E615E47038C9 /* Frameworks */,
+				9EA14359AEEE4AEA6A8230B2 /* Pods */,
+				F714268863487EAC34756DA1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -141,6 +132,15 @@
 			path = EzHTTPSample;
 			sourceTree = "<group>";
 		};
+		F714268863487EAC34756DA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0DB7D87157F44A27A343226B /* libPods-EzHTTPSample.a */,
+				26AF13A588EADBCD0CFD664F /* libPods-EzHTTPSampleTests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -148,7 +148,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C3792E941D4CD3D900B08DEA /* Build configuration list for PBXNativeTarget "EzHTTPSampleTests" */;
 			buildPhases = (
-				70EB8B2D0CA8116E0785746B /* [CP] Check Pods Manifest.lock */,
+				EBD719F6CD17CE841B1EB6D4 /* [CP] Check Pods Manifest.lock */,
 				C3792E891D4CD3D900B08DEA /* Sources */,
 				C3792E8A1D4CD3D900B08DEA /* Frameworks */,
 				C3792E8B1D4CD3D900B08DEA /* Resources */,
@@ -167,7 +167,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C3D225E71D28AAAC00A0F339 /* Build configuration list for PBXNativeTarget "EzHTTPSample" */;
 			buildPhases = (
-				3E3EC858BDF3E62231AFCC73 /* [CP] Check Pods Manifest.lock */,
+				9E70985786516FAFE550CA27 /* [CP] Check Pods Manifest.lock */,
 				C3D225D11D28AAAC00A0F339 /* Sources */,
 				C3D225D21D28AAAC00A0F339 /* Frameworks */,
 				C3D225D31D28AAAC00A0F339 /* Resources */,
@@ -178,6 +178,8 @@
 			dependencies = (
 			);
 			name = EzHTTPSample;
+			packageProductDependencies = (
+			);
 			productName = EzHTTPSample;
 			productReference = C3D225D51D28AAAC00A0F339 /* EzHTTPSample.app */;
 			productType = "com.apple.product-type.application";
@@ -213,6 +215,8 @@
 				Base,
 			);
 			mainGroup = C3D225CC1D28AAAC00A0F339;
+			packageReferences = (
+			);
 			productRefGroup = C3D225D61D28AAAC00A0F339 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -244,16 +248,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3E3EC858BDF3E62231AFCC73 /* [CP] Check Pods Manifest.lock */ = {
+		9E70985786516FAFE550CA27 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-EzHTTPSample-checkManifestLockResult.txt",
 			);
@@ -262,16 +270,20 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		70EB8B2D0CA8116E0785746B /* [CP] Check Pods Manifest.lock */ = {
+		EBD719F6CD17CE841B1EB6D4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-EzHTTPSampleTests-checkManifestLockResult.txt",
 			);
@@ -332,7 +344,7 @@
 /* Begin XCBuildConfiguration section */
 		C3792E951D4CD3D900B08DEA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7DA1D43C5474D36B826D402 /* Pods-EzHTTPSampleTests.debug.xcconfig */;
+			baseConfigurationReference = 0362D4F92FC7B638CC49AF33 /* Pods-EzHTTPSampleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = EzHTTPSampleTests/Info.plist;
@@ -345,7 +357,7 @@
 		};
 		C3792E961D4CD3D900B08DEA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BFC6B540C7F398D5DB27DB38 /* Pods-EzHTTPSampleTests.release.xcconfig */;
+			baseConfigurationReference = 9A13F44FBF0BD7CB5E69D7CB /* Pods-EzHTTPSampleTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = EzHTTPSampleTests/Info.plist;
@@ -472,7 +484,7 @@
 		};
 		C3D225E81D28AAAC00A0F339 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B3AA4702BEE22552A7BBAB84 /* Pods-EzHTTPSample.debug.xcconfig */;
+			baseConfigurationReference = 4B7FDEC8A4D0766E2231E16F /* Pods-EzHTTPSample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5E2LE3SXM6;
@@ -485,7 +497,7 @@
 		};
 		C3D225E91D28AAAC00A0F339 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 83EC2942D22942C8183D7C84 /* Pods-EzHTTPSample.release.xcconfig */;
+			baseConfigurationReference = 55AB7818B849C994693E700B /* Pods-EzHTTPSample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5E2LE3SXM6;

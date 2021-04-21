@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "EzHTTP",
+        "repositoryURL": "/Users/asada/Sync/clone/EzHTTP",
+        "state": {
+          "branch": null,
+          "revision": "30f0766dade65a0926cdaeec1ece604ebdf41c96",
+          "version": "3.6.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
